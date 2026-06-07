@@ -41,6 +41,12 @@ warnings/errors**.
 | `rmaj_mul_one_sub_psum_le_one` | **the finitary upper bound** `(∏_{k=2}^n(1+uₖ))·(1 − S_n) ≤ 1` (exact identity `(1−S_n)−(1+u)(1−S_n−u)=u·S_n+u²≥0`) | `[propext, Classical.choice, Quot.sound]` |
 | `rinf_bracket`    | **the closed-form bracket** `1 + S ≤ R∞ ≤ 1/(1 − S)` (conditional on `Σ uₙ` bounded above and `S = ⨆ₙ S_n < 1`) | `[propext, Classical.choice, Quot.sound]` |
 | `rseq_tendsto_under_psum_bdd` | `Rₙ → R∞` under the same `psum`-boundedness/`S<1` hypotheses                     | `[propext, Classical.choice, Quot.sound]` |
+| `indepPoly_eq_rseq` | **the independence-polynomial identity** `Rₙ = ∑_{T ⊆ {2,…,n}, no two consecutive} ∏_{i∈T} uᵢ` (weighted independence polynomial of the path graph), unconditional | `[propext, Classical.choice, Quot.sound]` |
+| `indepPoly_succ_succ` | the deletion–contraction recurrence `indepPoly (n+2) = indepPoly (n+1) + u(n+2)·indepPoly n` | `[propext, Classical.choice, Quot.sound]` |
+| `sum_filter_mem_top` | subsets containing the top vertex `n+2` sum to `u(n+2)·indepPoly n` (the contraction half, via `sum_bij'`) | `[propext, Classical.choice, Quot.sound]` |
+| `filter_not_mem_top` | subsets avoiding `n+2` are exactly the no-two-consecutive subsets of `{2,…,n+1}` (the deletion half) | `[propext, Classical.choice, Quot.sound]` |
+| `indepPoly_zero`, `indepPoly_one`, `NoTwoConsec.erase` | base cases and the erase-stability of `NoTwoConsec`  | `[propext, Classical.choice, Quot.sound]` |
+| `sigma2win_eq`    | **finite-window σ₂ closed-form core** `σ₂ = e₂ − a₁` over any window `[m,M]` (no-two-consecutive pair sum = all pairs − consecutive pairs), unconditional | `[propext, Classical.choice, Quot.sound]` |
 
 `casoratian_step`, `casoratian_eq`, `pq_casoratian` are stated over an arbitrary
 `CommRing`. The `rseq_*`/`rmaj_*` results are specialized to `ℝ` (the application
@@ -50,6 +56,19 @@ domain). Together these are the exact **Casoratian identity** (item 2 of
 **closed-form two-sided bracket** `1 + S ≤ R∞ ≤ 1/(1 − S)` (item 4), all reduced to
 the single finitary hypothesis that the partial sums `S_n = Σ uₖ` are bounded above
 (equivalently `Σ uₙ < ∞`) together with `S = ⨆ₙ S_n < 1`.
+
+`Indep.lean` and `Sigma.lean` add two **unconditional, fully finitary** results
+(no analytic hypotheses at all), promoting parts of the note's STRUCTURAL list to
+PROVEN. `indepPoly_eq_rseq` is the **independence-polynomial identity** (item: `Rₙ`
+as a weighted independence polynomial of the path graph): `Rₙ` equals the sum over
+no-two-consecutive subsets `T ⊆ {2,…,n}` of `∏_{i∈T} uᵢ`, proved by the
+deletion–contraction split at the top vertex `n+2`. `sigma2win_eq` is the
+**finite-window inclusion–exclusion core of the σ₂ cluster closed form**,
+`σ₂ = e₂ − a₁`: over any window `[m,M]` the no-two-consecutive pair sum equals the
+unrestricted pair sum minus the adjacent-pair sum. The Newton reduction
+`e₂ = ½(p₁² − p₂)` and the σ₃ closed form `σ₃ = e₃ − a₁p₁ + c + t` remain STRUCTURAL
+/ numerically VERIFIED for now (the σ₃ formalization — the runs-counted-twice
+reindexing of Appendix A — is the next increment).
 
 ## What is OUT OF SCOPE (deliberately not formalized — labelled hypotheses)
 
@@ -75,7 +94,7 @@ v4.30.0` (`lakefile.toml`, `lake-manifest.json`).
 ```sh
 lake exe cache get      # fetch prebuilt Mathlib oleans
 lake build              # builds PcfContinuant (zero warnings/errors)
-lake env lean Check.lean   # prints the eighteen axiom cones above
+lake env lean Check.lean   # prints the twenty-six axiom cones above
 ```
 
 ## License

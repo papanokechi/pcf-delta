@@ -1,5 +1,7 @@
 import PcfContinuant.Basic
 import PcfContinuant.Bracket
+import PcfContinuant.Indep
+import PcfContinuant.Sigma
 
 open PcfContinuant
 
@@ -21,3 +23,17 @@ open PcfContinuant
 #print axioms rmaj_mul_one_sub_psum_le_one
 #print axioms rinf_bracket
 #print axioms rseq_tendsto_under_psum_bdd
+
+-- Independence-polynomial identity (Indep.lean): Rₙ = weighted independence
+-- polynomial of the path graph.  STRUCTURAL → PROVEN.
+#print axioms NoTwoConsec.erase
+#print axioms indepPoly_zero
+#print axioms indepPoly_one
+#print axioms filter_not_mem_top
+#print axioms sum_filter_mem_top
+#print axioms indepPoly_succ_succ
+#print axioms indepPoly_eq_rseq
+
+-- Finite-window cluster closed form σ₂ (Sigma.lean): σ₂ = e₂ − a₁.
+-- STRUCTURAL → PROVEN.
+#print axioms sigma2win_eq

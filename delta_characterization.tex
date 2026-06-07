@@ -481,6 +481,21 @@ i.e.\ $\Rinf$ exists.
 $1+S\le\Rinf\le1/(1-S)$ (Proposition~\ref{prop:bracket}), conditional on the partial
 sums $S_n=\sum_{k=2}^n u_k$ being bounded above and $S=\sup_nS_n<1$; the finitary
 core is $1+S_n\le R_n$ and $\bigl(\prod_{k=2}^n(1+u_k)\bigr)(1-S_n)\le1$ (over $\R$).
+\item \texttt{NoTwoConsec.erase}, \texttt{indepPoly\_zero},
+\texttt{indepPoly\_one}, \texttt{filter\_not\_mem\_top},
+\texttt{sum\_filter\_mem\_top}, \texttt{indepPoly\_succ\_succ},
+\texttt{indepPoly\_eq\_rseq}: the \emph{independence-polynomial identity}
+(Proposition~\ref{prop:indpoly}), \emph{unconditionally}. The weighted independence
+polynomial of the path graph on $\{2,\dots,n\}$,
+$\mathrm{indepPoly}(u,n)=\sum_{T}\prod_{i\in T}u_i$ over no-two-consecutive
+$T\subseteq\{2,\dots,n\}$, equals $R_n$; proved by the deletion--contraction split
+at the top vertex (over $\R$, no positivity needed).
+\item \texttt{sigma2win\_eq}: the finite-window inclusion--exclusion core of the
+$\sigma_2$ closed form (Proposition~\ref{prop:sigma}, Appendix~\ref{app:clusters}),
+\emph{unconditionally}: over any window $[m,M]$, the no-two-consecutive pair sum
+equals $\sigma_2=e_2-a_1$ (every ordered pair is consecutive or not). The Newton
+reduction $e_2=\tfrac12(p_1^2-p_2)$ and the $\sigma_3$ closed form are not yet
+formalized (see \textsc{structural} below).
 \end{itemize}
 \end{theorem}
 
@@ -497,15 +512,20 @@ and the non-elementarity conjecture.
 
 \begin{itemize}
 \item \textbf{PROVEN} (Lean, clean cones; Theorem~\ref{thm:lean}): the Casoratian
-identity, the existence of $\Rinf=\lim R_n$ via monotone--bounded convergence, and
-the closed-form bracket $1+S\le\Rinf\le1/(1-S)$ (Proposition~\ref{prop:bracket}),
-the last two conditional on the elementary analytic input $\sum u_n<\infty$ (and
-$S<1$ for the bracket).
+identity, the existence of $\Rinf=\lim R_n$ via monotone--bounded convergence, the
+closed-form bracket $1+S\le\Rinf\le1/(1-S)$ (Proposition~\ref{prop:bracket}), the
+independence-polynomial identity (Proposition~\ref{prop:indpoly}, unconditional),
+and the finite-window inclusion--exclusion core $\sigma_2=e_2-a_1$ of the $\sigma_2$
+closed form (Proposition~\ref{prop:sigma}, unconditional); the bracket and limit are
+conditional on the elementary analytic input $\sum u_n<\infty$ (and $S<1$ for the
+bracket), the independence-polynomial and $\sigma_2$ cores require no analytic input.
 \item \textbf{STRUCTURAL} (complete elementary hand proof; not yet formalized): the
-scaled recurrence and tail estimate (Lemma~\ref{lem:scaled}), the
-independence-polynomial identity (Proposition~\ref{prop:indpoly}), and the closed
-forms for $S$ and $\sigma_2,\sigma_3$ (Propositions~\ref{prop:S},~\ref{prop:sigma};
-the inclusion--exclusion derivation of $\sigma_2,\sigma_3$ is Appendix~\ref{app:clusters}).
+scaled recurrence and tail estimate (Lemma~\ref{lem:scaled}), the closed forms for
+$S$ (Proposition~\ref{prop:S}), and --- completing the cluster forms beyond the Lean
+$\sigma_2$ core above --- the Newton reduction $e_2=\tfrac12(p_1^2-p_2)$,
+$e_3=\tfrac16(p_1^3-3p_1p_2+2p_3)$ and the $\sigma_3$ closed form
+(Proposition~\ref{prop:sigma}; the inclusion--exclusion derivation of
+$\sigma_2,\sigma_3$ is Appendix~\ref{app:clusters}).
 \item \textbf{VERIFIED} (numerically): the cluster identity exactly
 (\texttt{continuant\_verify.py}); $\sigma_2,\sigma_3$ and each step of their
 inclusion--exclusion derivation to $\sim10^{-54}$ (\texttt{verify\_clusters.py},
@@ -532,11 +552,14 @@ values and Table~\ref{tab:hp}, output \texttt{delta\_values\_m2.txt});
 \texttt{verify\_forward\_crosscheck.py} (the independent cross-check);
 \texttt{hp\_probe.py}, \texttt{pslq\_stability.py} (the integer-relation nulls,
 Proposition~\ref{prop:null}); and the Lean package \texttt{lean/pcf\_continuant}
-(\texttt{Basic.lean}, \texttt{Bracket.lean}, \texttt{Check.lean};
+(\texttt{Basic.lean}, \texttt{Bracket.lean}, \texttt{Indep.lean},
+\texttt{Sigma.lean}, \texttt{Check.lean};
 Theorem~\ref{thm:lean}). Version~1.0 of this note is archived at Zenodo (version DOI
 \texttt{10.5281/zenodo.20578401}, concept DOI \texttt{10.5281/zenodo.20578400}) as a
 supplement to the companion growth-law note~\cite{growth}; the present version adds
-the machine-checked closed-form bracket (\texttt{rinf\_bracket},
+the machine-checked closed-form bracket (\texttt{rinf\_bracket}), the
+independence-polynomial identity (\texttt{indepPoly\_eq\_rseq}), and the
+finite-window $\sigma_2$ inclusion--exclusion core (\texttt{sigma2win\_eq}),
 Theorem~\ref{thm:lean}). The Lean sources and the verification scripts named above
 accompany the deposit in its public repository,
 \url{https://github.com/papanokechi/pcf-delta}.
