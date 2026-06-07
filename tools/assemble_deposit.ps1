@@ -102,7 +102,7 @@ Get-ChildItem $deposit -Recurse -File -Force |
         $lines.Add("$h  $rel")
     }
 [IO.File]::WriteAllText($sumsPath, ($lines -join "`n") + "`n", [Text.UTF8Encoding]::new($false))
-Write-Host ("SHA256SUMS.txt: {0} files hashed" -f $lines.Count)
+Write-Host ("SHA256SUMS.txt: {0} files hashed (this is the authoritative upload manifest)" -f $lines.Count)
 
 # --- 3. validate the assembled deposit ---
 Write-Host "`n--- validating assembled deposit ---"
@@ -122,7 +122,8 @@ if ($rc -ne 0) {
 Write-Host "Deposit assembled and validated at: $deposit"
 Write-Host ""
 Write-Host "NEXT (operator-gated, by hand - this script does NOT do these):"
-Write-Host "  * Review deposit/ contents and deposit/SHA256SUMS.txt."
+Write-Host "  * Upload exactly the files listed in deposit/SHA256SUMS.txt."
+Write-Host "    Do NOT upload deposit/.gitkeep - it is a git placeholder, not deposit content."
 Write-Host "  * On Zenodo, open concept 10.5281/zenodo.20578400 -> 'New version',"
 Write-Host "    upload deposit/ contents, confirm METADATA.yml fields, then Publish."
 Write-Host "  * The v1.1 version DOI is minted by that Publish action."
