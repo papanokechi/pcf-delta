@@ -38,14 +38,17 @@ license: CC-BY-4.0
 repository-code: "https://github.com/papanokechi/pcf-delta"
 doi: "10.5281/zenodo.20578400"
 identifiers:
-  # Minted by Zenodo at publish (2026-06-07). Concept DOI = cite-all (resolves to
-  # the latest version); version DOI = this specific deposit (v1.0).
+  # Minted by Zenodo at publish. Concept DOI = cite-all (resolves to the latest
+  # version); version DOIs identify each specific deposit.
   - type: doi
     value: "10.5281/zenodo.20578400"
     description: "Concept DOI (all versions; cite-all)"
   - type: doi
+    value: "10.5281/zenodo.20585194"
+    description: "Version DOI (v1.1 deposit; this release, 2026-06-07)"
+  - type: doi
     value: "10.5281/zenodo.20578401"
-    description: "Version DOI (v1.0 deposit). The v1.1 version DOI is to be minted at the operator-gated v1.1 Zenodo release; it is not asserted here."
+    description: "Version DOI (v1.0 deposit, 2026-06-07; superseded, frozen in archive/)"
 keywords:
   - "polynomial continued fractions"
   - "continued fraction convergents"
@@ -77,7 +80,9 @@ references:
     doi: "10.5281/zenodo.19491767"
     notes: "Context reference."
     year: 2026
-# DEPOSITED on Zenodo 2026-06-07 as version 1.0: version DOI 10.5281/zenodo.20578401,
-# concept (cite-all) DOI 10.5281/zenodo.20578400. GitHub repo
+# DEPOSITED on Zenodo: v1.0 on 2026-06-07 (version DOI 10.5281/zenodo.20578401);
+# v1.1 on 2026-06-07 (version DOI 10.5281/zenodo.20585194), the current release.
+# Concept (cite-all) DOI 10.5281/zenodo.20578400. GitHub repo
 # https://github.com/papanokechi/pcf-delta; no GitHub release, no webhook.
 # isSupplementTo target 10.5281/zenodo.20564681 confirmed before publish.
+# v1.1 version DOI verified live from zenodo.org/api/records/20585194 (2026-06-08).
