@@ -1,0 +1,42 @@
+{
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "title": "pcf-delta: The growth-law correction constant \u03b4 = log R\u221e of the quadratic polynomial continued fraction \u2014 structure, a closed-form bracket, and certified high-precision values",
+  "version": "1.0",
+  "language": "eng",
+  "license": "CC-BY-4.0",
+  "creators": [
+    {
+      "name": "Papanokechi",
+      "orcid": "0009-0000-6192-8273"
+    }
+  ],
+  "description": "<p>A characterization of the additive correction constant <em>&delta; = log R<sub>&infin;</sub> &gt; 0</em> that the companion growth-law note introduces and leaves undetermined for the quadratic polynomial continued fraction <em>V(A,B,C) = 1 + K<sub>n&ge;1</sub> 1/(An<sup>2</sup>+Bn+C)</em>, integers <em>A,B,C &ge; 1</em>. With <em>b<sub>k</sub> = Ak<sup>2</sup>+Bk+C</em>, the standard continuant <em>q<sub>0</sub>=1, q<sub>1</sub>=b<sub>1</sub>, q<sub>n</sub>=b<sub>n</sub>q<sub>n-1</sub>+q<sub>n-2</sub></em>, scaled partial quotients <em>u<sub>n</sub> = 1/(b<sub>n-1</sub>b<sub>n</sub>)</em> and <em>S = &sum;<sub>n&ge;2</sub> u<sub>n</sub></em>, the scaled limit is <em>R<sub>&infin;</sub> = lim q<sub>n</sub>/&prod;<sub>k&le;n</sub> b<sub>k</sub></em> and <em>&delta; = log R<sub>&infin;</sub></em>.</p><p><strong>Contributions.</strong> (i) <em>R<sub>&infin;</sub></em> is exactly the independence polynomial of the path graph on the indices, giving the elementary two-sided bracket <em>log(1+S) &le; &delta; &le; &minus;log(1&minus;S)</em>. (ii) Exact closed forms for the cluster sums <em>&sigma;<sub>2</sub>, &sigma;<sub>3</sub></em> in terms of power sums of <em>u<sub>n</sub></em>, machine-verified against brute-force enumeration of non-consecutive subsets to residuals <em>~10<sup>-54</sup></em>. (iii) Certified high-precision values of <em>&delta;</em> for nine triples (&ge;39 correct digits each, &ge;44 for (1,0,1): <em>&delta;(1,0,1) = 0.12385719436062639272850498970259084096757955\u2026</em>) via an exact downward recurrence seeded by an order-3 cluster expansion at large M, with an independent forward + Neville cross-check (~25 digits) and an exact confluent-polygamma seed for degenerate (repeated-pole) triples such as (1,2,1) where <em>S = &pi;<sup>2</sup>/3 &minus; 13/4</em>. (iv) A rigorous null: no low-height integer relation is found for <em>V</em>, <em>R<sub>&infin;</sub></em>, or <em>&delta;</em> (mpmath identify at 100 digits; PSLQ over {1, &pi;, log 2, &gamma;, Catalan, &zeta;(3)}), and a precision-stability test shows the high-height PSLQ vectors are working-precision artifacts, not genuine relations. (v) A machine-checked finitary core in Lean 4 / Mathlib (toolchain pinned lean4 v4.30.0, Mathlib v4.30.0): the Casoratian (discrete-Wronskian) identity and the existence of <em>R<sub>&infin;</sub> = lim R<sub>n</sub></em> by monotone-bounded convergence, with clean axiom cones.</p><p><strong>Epistemic status (SIARC four-class).</strong> <strong>PROVEN</strong> &mdash; the Lean core (Casoratian identity; existence of <em>R<sub>&infin;</sub></em>), each declaration verified by <code>#print axioms</code> to a subset of {propext, Classical.choice, Quot.sound} with no sorryAx and no sorry/admit in source. <strong>STRUCTURAL</strong> &mdash; the scaled recurrence and tail estimate, the independence-polynomial identity, the bracket, and the closed forms for <em>S</em>, <em>&sigma;<sub>2</sub></em>, <em>&sigma;<sub>3</sub></em> (complete elementary hand proofs, not yet formalized). <strong>VERIFIED</strong> &mdash; the cluster identities and all tabulated <em>&delta;</em> values numerically (mpmath), with the bracket satisfied on every tabulated triple. <strong>CONJECTURED</strong> &mdash; <em>&delta;</em> has no low-height elementary closed form and is a new transcendental constant of the family; irrationality of <em>&delta;</em> is open. A null integer-relation result is a complete and honest answer, not a gap.</p>",
+  "keywords": [
+    "polynomial continued fractions",
+    "continued fraction convergents",
+    "growth law correction constant",
+    "independence polynomial",
+    "high-precision computation",
+    "integer relation detection",
+    "Lean 4",
+    "formal verification",
+    "transcendental constants",
+    "SIARC"
+  ],
+  "related_identifiers": [
+    {
+      "relation": "isSupplementTo",
+      "identifier": "10.5281/zenodo.20564681",
+      "scheme": "doi",
+      "resource_type": "publication-preprint"
+    },
+    {
+      "relation": "references",
+      "identifier": "10.5281/zenodo.19491767",
+      "scheme": "doi",
+      "resource_type": "publication-preprint"
+    }
+  ],
+  "notes": "ORCID (0009-0000-6192-8273) is source-verified. PARENT DEPENDENCY (isSupplementTo): the companion growth-law note, concept (cite-all) DOI 10.5281/zenodo.20564681, which introduces delta and leaves it undetermined; this DOI was verified live (doi.org 302 -> zenodo.org/records/20565409) on 2026-06-07. CONTEXT (references): the deposited ladder paper, concept DOI 10.5281/zenodo.19491767, verified live. GATE STATUS at draft time: (1) parent and ladder DOIs both resolve [confirmed]; (2) the Lean package lean/pcf_continuant was machine-rechecked with 'lake env lean Check.lean' (toolchain leanprover/lean4:v4.30.0) on 2026-06-07 -- all twelve declarations report axiom cones that are subsets of {propext, Classical.choice, Quot.sound}, no sorryAx, and Basic.lean contains no sorry/admit [confirmed, not asserted from memory]; (3) UNRESOLVED operator decision: whether the ten reproducibility scripts (harness_rinf.py, continuant_verify.py, S_closed_form.py, S_confluent.py, verify_clusters.py, hp_delta_v2.py, finalize_m2.py, verify_forward_crosscheck.py, hp_probe.py, pslq_stability.py), the data file delta_values_m2.txt, and the Lean package ship inside this deposit or in a linked public repository. LICENSE: CC-BY-4.0 for the paper unit (delta_characterization.pdf); the bundled code (the scripts and the Lean package lean/pcf_continuant) is Apache-2.0 per the project convention. DLMF is cited at section level only (sec 5.15 polygamma, sec 5.7 series) -- no equation numbers are asserted. The non-elementarity claim is CONJECTURED, supported by a precision-stable null, not proven. DISCIPLINE: deposit is OPERATOR-GATED. No DOI is minted by this file; no public repository URL is asserted (the repo is forthcoming). This .zenodo.json is documentation/preparation only and must NOT be used to trigger a release until the operator confirms the parent note is deposited (it is) and decides the code-bundling question (item 3 above)."
+}
