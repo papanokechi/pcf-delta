@@ -118,11 +118,60 @@ if ($rc -ne 0) {
     exit $rc
 }
 
-# --- 4. STOP: report, do not mint ---
-Write-Host "Deposit assembled and validated at: $deposit"
+# --- 4. package the deposit as a single self-verifying zip ---
+# Built strictly from SHA256SUMS.txt so nothing extra (.gitkeep, stray builds) can
+# enter; the manifest itself is included so the archive is self-verifying. Files sit
+# under a single top-level folder pcf-delta-v<version>/ matching the manifest paths.
+$metaText = Get-Content (Join-Path $repo 'METADATA.yml') -Raw
+$verMatch = [regex]::Match($metaText, '(?m)^version:\s*"?([0-9]+\.[0-9]+)"?')
+if (-not $verMatch.Success) { throw "Could not read version from METADATA.yml" }
+$ver = $verMatch.Groups[1].Value
+$top = "pcf-delta-v$ver"
+$zipStage = Join-Path ([IO.Path]::GetTempPath()) $top
+$zipPath  = Join-Path $deposit "$top.zip"
+Remove-Item $zipStage -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item $zipPath  -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force -Path $zipStage | Out-Null
+
+$zn = 0
+foreach ($line in Get-Content $sumsPath) {
+    if (-not $line.Trim()) { continue }
+    $rel = ($line -split '  ', 2)[1].Trim()
+    $src = Join-Path $deposit ($rel -replace '/', '\')
+    $dst = Join-Path $zipStage ($rel -replace '/', '\')
+    New-Item -ItemType Directory -Force -Path (Split-Path $dst) | Out-Null
+    Copy-Item $src $dst -Force
+    $zn++
+}
+Copy-Item $sumsPath (Join-Path $zipStage 'SHA256SUMS.txt') -Force
+Compress-Archive -Path $zipStage -DestinationPath $zipPath -CompressionLevel Optimal
+
+# self-verify: extract to temp and re-hash against the bundled manifest
+$zver = Join-Path ([IO.Path]::GetTempPath()) "$top-verify"
+Remove-Item $zver -Recurse -Force -ErrorAction SilentlyContinue
+Expand-Archive -Path $zipPath -DestinationPath $zver -Force
+$zbase = Join-Path $zver $top
+$zbad = 0
+foreach ($line in Get-Content (Join-Path $zbase 'SHA256SUMS.txt')) {
+    if (-not $line.Trim()) { continue }
+    $sp = $line -split '  ', 2
+    $f = Join-Path $zbase ($sp[1].Trim() -replace '/', '\')
+    if (-not (Test-Path $f) -or
+        (Get-FileHash $f -Algorithm SHA256).Hash.ToLower() -ne $sp[0].Trim()) { $zbad++ }
+}
+Remove-Item $zipStage, $zver -Recurse -Force -ErrorAction SilentlyContinue
+if ($zbad -ne 0) { throw "Zip self-verify FAILED: $zbad file(s) mismatch." }
+$zipHash = (Get-FileHash $zipPath -Algorithm SHA256).Hash.ToLower()
+Write-Host ("zip: {0} ({1} content files + SHA256SUMS.txt; {2:N0} bytes)" -f `
+    (Split-Path $zipPath -Leaf), $zn, (Get-Item $zipPath).Length)
+Write-Host "zip SHA-256: $zipHash"
+
+# --- 5. STOP: report, do not mint ---
+Write-Host ""
+Write-Host "Deposit assembled, validated, and packaged at: $deposit"
 Write-Host ""
 Write-Host "NEXT (operator-gated, by hand - this script does NOT do these):"
-Write-Host "  * Upload exactly the files listed in deposit/SHA256SUMS.txt."
+Write-Host "  * Upload deposit/$top.zip  (or the individual files in deposit/SHA256SUMS.txt)."
 Write-Host "    Do NOT upload deposit/.gitkeep - it is a git placeholder, not deposit content."
 Write-Host "  * On Zenodo, open concept 10.5281/zenodo.20578400 -> 'New version',"
 Write-Host "    upload deposit/ contents, confirm METADATA.yml fields, then Publish."
