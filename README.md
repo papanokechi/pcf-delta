@@ -57,8 +57,15 @@ quadratic growth-law note introduces and leaves undetermined. The Zenodo metadat
 records this as `isSupplementTo` the growth-law note (concept DOI
 `10.5281/zenodo.20564681`).
 
-## Status
+## Citation / DOI
 
-The public repository and the Zenodo deposit are **forthcoming and operator-gated**.
-No DOI for this work is minted here; it is assigned by Zenodo at publish time. This
-unit is staged for review only.
+Deposited on Zenodo (2026-06-07, version 1.0):
+
+- **Concept DOI** (cite-all, resolves to the latest version):
+  [`10.5281/zenodo.20578400`](https://doi.org/10.5281/zenodo.20578400)
+- **Version DOI** (this deposit, v1.0):
+  [`10.5281/zenodo.20578401`](https://doi.org/10.5281/zenodo.20578401)
+
+The Zenodo metadata records this work as `isSupplementTo` the companion growth-law
+note (concept DOI `10.5281/zenodo.20564681`). No GitHub release is cut and the
+Zenodo webhook is OFF; see `CITATION.cff` for full citation metadata.
