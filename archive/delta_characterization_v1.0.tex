@@ -23,7 +23,7 @@ continued fraction: structure, a closed-form bracket,\\
 and certified high-precision values}
 \author{Papanokechi\\
 \small ORCID: \href{https://orcid.org/0009-0000-6192-8273}{0009-0000-6192-8273}}
-\date{June 2026 \quad(\texttt{pcf-delta} v1.1 draft)}
+\date{June 2026 \quad(\texttt{pcf-delta} draft)}
 
 \begin{document}
 \maketitle
@@ -52,9 +52,8 @@ by a fully independent forward/Neville extrapolation. An integer-relation
 (PSLQ/\texttt{identify}) search returns no low-height closed form, and a
 precision-stability test shows the uncontrolled relations to be numerical
 artifacts; we record $\delta$ as conjecturally a new transcendental constant of the
-family. Finally, the finitary structural core --- the Casoratian identity, the
-monotone--bounded convergence $R_n\to\Rinf$, and the closed-form bracket
-$1+S\le\Rinf\le1/(1-S)$ --- is machine-checked in Lean~4/Mathlib
+family. Finally, the finitary structural core --- the Casoratian identity and the
+monotone--bounded convergence $R_n\to\Rinf$ --- is machine-checked in Lean~4/Mathlib
 with clean axiom cones (no \texttt{sorry}).
 \end{abstract}
 
@@ -103,33 +102,10 @@ cross-checked by an independent extrapolation method.
 finds no low-height closed form, and a precision-stability test exhibits the
 uncontrolled relations as artifacts (Section~\ref{sec:null}).
 \item[(v)] \textbf{A machine-checked core.} The finitary structural facts on which
-(i)--(iii) rest --- the Casoratian identity, the monotone--bounded convergence
-$R_n\to\Rinf$, and the closed-form bracket $1+S\le\Rinf\le1/(1-S)$ (conditional on
-$\sum u_n<\infty$ and $S<1$) --- are formalized in Lean~4/Mathlib with clean axiom
-cones (Section~\ref{sec:lean}).
+(i)--(iii) rest --- the Casoratian identity and the monotone--bounded convergence
+$R_n\to\Rinf$ --- are formalized in Lean~4/Mathlib with clean axiom cones
+(Section~\ref{sec:lean}).
 \end{enumerate}
-
-\paragraph{Relation to prior work.}
-The denominators $q_n$ satisfy the three-term recurrence $q_n=b_nq_{n-1}+q_{n-2}$
-with polynomially growing coefficients $b_n=An^2+Bn+C\to\infty$, a Poincar\'e-type
-difference equation. Such a recurrence has a two-dimensional solution space spanned
-by a \emph{dominant} solution (here $q_n$) and a \emph{recessive} (minimal) solution;
-convergence of the continued fraction to $V$ is exactly the selection of the minimal
-ray by $p_n/q_n$, the content of Pincherle's theorem (originally due to Pincherle;
-modern statement and attribution in~\cite{gautschi}, with minimal/recessive solutions
-in~\cite[\S3.6]{dlmf}). The leading large-$n$ asymptotics of growing-coefficient
-recurrences are governed by Perron's theorem~\cite{perron} and the
-Birkhoff--Trjitzinsky/Wong--Li asymptotic theory~\cite{bt,wongli}; applied to $q_n$
-these produce precisely the dominant terms $n\log A+2\log(n!)+\tfrac{B}{A}\log n$ and
-the Gamma-product constant $K_\Gamma$ of the companion law~\eqref{eq:law}. What that
-theory leaves undetermined is the additive \emph{constant} --- the amplitude relating
-the recessive solution to the product scale $\prod_kb_k$. The present note isolates
-and characterizes that constant, $\delta=\log\Rinf$: we show $\Rinf$ is the path
-independence polynomial at the weights $u_n=1/(b_{n-1}b_n)$
-(Proposition~\ref{prop:indpoly}), from which the closed-form bracket and the certified
-values below follow. To our knowledge neither this combinatorial identity for the
-amplitude nor the digamma closed form for its bracketing series $S$ appears in that
-literature.
 
 \paragraph{Standing assumptions.}
 Throughout $A,B,C$ are integers $\ge1$, so $b_k=Ak^2+Bk+C\ge A+B+C\ge3>0$ for all
@@ -184,17 +160,10 @@ in scaled variables,
 \]
 \end{lemma}
 
-\noindent The initial data $p_{-1}{=}1,\,p_0{=}1,\,q_{-1}{=}0,\,q_0{=}1$ give
-$p_1{=}b_1{+}1$ and $q_1{=}b_1$, so Lemma~\ref{lem:caso} is exactly the convergent
-Casoratian $p_{n+1}q_n-p_nq_{n+1}=(-1)^n$ of Theorem~\ref{thm:lean} re-indexed by
-$n\mapsto n+1$; the Lean statement uses that shifted index and the equivalent sign
-$(-1)^n$.
-
 The Wronskian decays like $P_n^{-2}\asymp(n!)^{-4}$, which is why the
 \emph{value} $V=\lim p_n/q_n$ converges super-geometrically (matched to
-$77$--$117$ digits across the test triples already at $N\approx4000$, and to the
-$129$ digits used in Section~\ref{sec:null} at larger $N$) while $\Rinf-R_n$ decays
-only like $1/n^3$. The slow convergence of $R_n$ is what forces the dedicated high-precision
+$77$--$117$ digits at $N\approx4000$) while $\Rinf=R_n$ converges only like
+$1/n^3$. The slow convergence of $R_n$ is what forces the dedicated high-precision
 method of Section~\ref{sec:hp}; a naive forward recurrence stalls at $\sim25$--$38$
 digits.
 
@@ -241,7 +210,7 @@ dynamic-programming equals $R_n$ for all tested triples and all $n$) by the scri
 
 \section{A closed-form two-sided bracket}\label{sec:bracket}
 
-\begin{proposition}[Bracket; \textsc{proven} (Lean, conditional core; Section~\ref{sec:lean}), \textsc{verified} all triples]
+\begin{proposition}[Bracket; \textsc{verified} all triples, \textsc{structural}]
 \label{prop:bracket}
 With $S=\sum_{n\ge2}u_n<1$,
 \[
@@ -257,23 +226,6 @@ $\Rinf\ge1+S$. For the upper bound, by~\eqref{eq:cluster} and $\sigma_k\le S^k$,
 $\Rinf=\sum_k\sigma_k\le\sum_k S^k=1/(1-S)$ (using $S<1$, which holds since
 numerically $S\le S(1,0,1)\approx0.1307$). Apply $\log$.
 \end{proof}
-
-\noindent The bracket is deliberately coarse: the lower bound keeps only
-$\sigma_0+\sigma_1$ and the upper bound replaces each $\sigma_k$ by its geometric
-majorant $S^k$. The exact cluster forms $\sigma_2,\sigma_3$ of
-Section~\ref{sec:hp} (Appendix~\ref{app:clusters}) sharpen it well past the bracket.
-
-\begin{remark}[Machine-checked, cluster-free route]
-The $\Rinf$-form of the bracket is formalized in Lean as \texttt{rinf\_bracket}
-(Section~\ref{sec:lean}), \emph{conditional} only on the elementary analytic input
-that the partial sums $S_n=\sum_{k=2}^n u_k$ are bounded above and $S=\sup_nS_n<1$.
-The formalization does not use the cluster expansion~\eqref{eq:cluster}: it rests on
-the two finitary inequalities $1+S_n\le R_n$ (\texttt{rseq\_ge\_one\_add\_psum}) and
-$\bigl(\prod_{k=2}^n(1+u_k)\bigr)(1-S_n)\le1$
-(\texttt{rmaj\_mul\_one\_sub\_psum\_le\_one}), the latter from the exact identity
-$(1-S_n)-(1+u)(1-S_n-u)=u\,S_n+u^2\ge0$. The $\delta$-form follows by monotonicity
-of $\log$.
-\end{remark}
 
 It remains to put $S$ in closed form. Write $b_n=A(n-r_1)(n-r_2)$, so
 $1/(b_{n-1}b_n)$ has its poles in the multiset $\{r_1,r_2,1+r_1,1+r_2\}$.
@@ -308,9 +260,8 @@ for $(A,B,C)=(1,2,1)$, $b_n=(n+1)^2$ has poles $\{-1,-1,0,0\}$ and
 \begin{equation}\label{eq:S121}
   S(1,2,1)=\frac{\pi^2}{3}-\frac{13}{4}=0.0398681336964528729\ldots,
 \end{equation}
-matched to $10^{-40}$. (Under the standing assumptions $A,B,C\ge1$ every
-$b_k=Ak^2+Bk+C\ge3>0$, so no summation index is a pole and the residue and
-confluent forms apply throughout.) Table~\ref{tab:bracket} shows the bracket on
+matched to $10^{-40}$. (The frame requires $b_1>0$; triples with $b_1=0$, e.g.\
+$(1,-2,1)$, are excluded.) Table~\ref{tab:bracket} shows the bracket on
 representative triples.
 
 \begin{table}[t]
@@ -354,14 +305,11 @@ Proposition~\ref{prop:S}, exact via $\psi$), and adjacency sums
 $a_1=\sum_n u_nu_{n+1}$, $c=\sum_n u_nu_{n+1}(u_n+u_{n+1})$,
 $t=\sum_n u_nu_{n+1}u_{n+2}$.
 
-\begin{proposition}[Cluster closed forms; \textsc{structural}
-(Appendix~\ref{app:clusters}), \textsc{verified} to $\sim10^{-54}$]
+\begin{proposition}[Cluster closed forms; \textsc{verified} to $\sim10^{-54}$]
 \label{prop:sigma}
-Equations~\eqref{eq:sig2}--\eqref{eq:sig3} hold: the unrestricted elementary
-symmetric sums $e_2=\tfrac12(p_1^2-p_2)$, $e_3=\tfrac16(p_1^3-3p_1p_2+2p_3)$
-corrected for adjacency by inclusion--exclusion (Appendix~\ref{app:clusters}). They
-agree with the brute-force enumeration of non-consecutive $2$- and $3$-subsets for
-$(A,B,C)$ equal to $(1,0,1)$, $(1,1,1)$, $(2,1,3)$, $(1,2,1)$
+Equations~\eqref{eq:sig2}--\eqref{eq:sig3} agree with the brute-force enumeration of
+non-consecutive $2$- and $3$-subsets for $(A,B,C)$ equal to $(1,0,1)$, $(1,1,1)$,
+$(2,1,3)$, $(1,2,1)$
 to better than $10^{-40}$ (residuals $\sim10^{-54}$--$10^{-55}$).
 \end{proposition}
 
@@ -434,9 +382,7 @@ natural constant bases. Specifically: $\texttt{identify}(V)=\text{None}$ at $100
 digits (the strongest null, $V$ being the natural ``answer'', known to $129$ digits
 via the fast $p_n/q_n$ ratio); $\texttt{identify}(\delta)=\text{None}$; PSLQ over
 $\{1,\pi,\log2,\gamma,\text{Catalan},\zeta(3)\}$ with $\max|c_i|\le200$ returns no
-relation; and $\Rinf$ --- the natural algebraic candidate, tested by PSLQ on
-$\{1,\Rinf,\Rinf^2,\Rinf^3,\Rinf^4\}$ --- is not algebraic of degree $\le4$ and
-height $\le10^4$ ($\delta$ and $V$ receive the \texttt{identify} null above).
+relation; and $\Rinf$ is not algebraic of degree $\le4$ and height $\le10^4$.
 \end{proposition}
 
 Uncontrolled PSLQ does return high-height vectors, but \texttt{pslq\_stability.py}
@@ -475,12 +421,6 @@ $\prod_{k=2}^n(1+u_k)$ (over $\R$).
 \texttt{rseq\_tendsto\_of\_rmaj\_bddAbove}: monotone convergence --- if the partial
 products are bounded above (equivalently $\sum u_n<\infty$) then $R_n\to\sup_nR_n$,
 i.e.\ $\Rinf$ exists.
-\item \texttt{psum}, \texttt{psum\_nonneg}, \texttt{rseq\_ge\_one\_add\_psum},
-\texttt{rmaj\_mul\_one\_sub\_psum\_le\_one}, \texttt{rinf\_bracket},
-\texttt{rseq\_tendsto\_under\_psum\_bdd}: the \emph{closed-form bracket}
-$1+S\le\Rinf\le1/(1-S)$ (Proposition~\ref{prop:bracket}), conditional on the partial
-sums $S_n=\sum_{k=2}^n u_k$ being bounded above and $S=\sup_nS_n<1$; the finitary
-core is $1+S_n\le R_n$ and $\bigl(\prod_{k=2}^n(1+u_k)\bigr)(1-S_n)\le1$ (over $\R$).
 \end{itemize}
 \end{theorem}
 
@@ -488,8 +428,8 @@ This is the \emph{conditional-core} pattern: the finitary algebra and order
 structure are proved unconditionally, while the single analytic input --- that the
 partial products are bounded above --- is taken as an explicit labelled hypothesis
 (it is the convergence of $\sum u_n=O(\sum k^{-4})$, elementary but analytic). Out
-of scope for the formalization, and proved by hand/numerics above, are: the
-\emph{value} of $\Rinf$, the closed forms for $S$, the
+of scope for the formalization, and proved by hand/numerics above, are: the value of
+$\Rinf$ and the upper bracket $\Rinf\le1/(1-S)$, the closed forms for $S$, the
 product constant $K_\Gamma$ and the Stirling/Gamma asymptotics of~\eqref{eq:law},
 and the non-elementarity conjecture.
 
@@ -497,19 +437,15 @@ and the non-elementarity conjecture.
 
 \begin{itemize}
 \item \textbf{PROVEN} (Lean, clean cones; Theorem~\ref{thm:lean}): the Casoratian
-identity, the existence of $\Rinf=\lim R_n$ via monotone--bounded convergence, and
-the closed-form bracket $1+S\le\Rinf\le1/(1-S)$ (Proposition~\ref{prop:bracket}),
-the last two conditional on the elementary analytic input $\sum u_n<\infty$ (and
-$S<1$ for the bracket).
+identity and the existence of $\Rinf=\lim R_n$ via monotone--bounded convergence.
 \item \textbf{STRUCTURAL} (complete elementary hand proof; not yet formalized): the
 scaled recurrence and tail estimate (Lemma~\ref{lem:scaled}), the
-independence-polynomial identity (Proposition~\ref{prop:indpoly}), and the closed
-forms for $S$ and $\sigma_2,\sigma_3$ (Propositions~\ref{prop:S},~\ref{prop:sigma};
-the inclusion--exclusion derivation of $\sigma_2,\sigma_3$ is Appendix~\ref{app:clusters}).
+independence-polynomial identity (Proposition~\ref{prop:indpoly}), the bracket
+(Proposition~\ref{prop:bracket}), and the closed forms for $S$ and
+$\sigma_2,\sigma_3$ (Propositions~\ref{prop:S},~\ref{prop:sigma}).
 \item \textbf{VERIFIED} (numerically): the cluster identity exactly
-(\texttt{continuant\_verify.py}); $\sigma_2,\sigma_3$ and each step of their
-inclusion--exclusion derivation to $\sim10^{-54}$ (\texttt{verify\_clusters.py},
-\texttt{verify\_inclusion\_exclusion.py}); $S$ closed forms to $35$--$62$ digits vs direct
+(\texttt{continuant\_verify.py}); $\sigma_2,\sigma_3$ to $\sim10^{-54}$
+(\texttt{verify\_clusters.py}); $S$ closed forms to $35$--$62$ digits vs direct
 summation; the bracket on all tabulated triples; and the $\delta$ values of
 Table~\ref{tab:hp}, certified $\ge39$ digits each and $\ge44$ for $(1,0,1)$, with an
 independent cross-check.
@@ -524,86 +460,15 @@ Every numerical claim is reproduced by the following scripts (mpmath): the harne
 \texttt{harness\_rinf.py} (two-solution frame, $\Rinf$, value $V$);
 \texttt{continuant\_verify.py} (exact independence-polynomial check);
 \texttt{S\_closed\_form.py}, \texttt{S\_confluent.py} (closed forms for $S$);
-\texttt{verify\_clusters.py} and \texttt{verify\_inclusion\_exclusion.py} (the
-$\sigma_2,\sigma_3$ gate and the step-by-step inclusion--exclusion check,
-Proposition~\ref{prop:sigma}, Appendix~\ref{app:clusters});
+\texttt{verify\_clusters.py} (the $\sigma_2,\sigma_3$ gate, Proposition~\ref{prop:sigma});
 \texttt{hp\_delta\_v2.py} and \texttt{finalize\_m2.py} (the high-precision $\delta$
 values and Table~\ref{tab:hp}, output \texttt{delta\_values\_m2.txt});
 \texttt{verify\_forward\_crosscheck.py} (the independent cross-check);
 \texttt{hp\_probe.py}, \texttt{pslq\_stability.py} (the integer-relation nulls,
 Proposition~\ref{prop:null}); and the Lean package \texttt{lean/pcf\_continuant}
-(\texttt{Basic.lean}, \texttt{Bracket.lean}, \texttt{Check.lean};
-Theorem~\ref{thm:lean}). Version~1.0 of this note is archived at Zenodo (version DOI
-\texttt{10.5281/zenodo.20578401}, concept DOI \texttt{10.5281/zenodo.20578400}) as a
-supplement to the companion growth-law note~\cite{growth}; the present version adds
-the machine-checked closed-form bracket (\texttt{rinf\_bracket},
-Theorem~\ref{thm:lean}). The Lean sources and the verification scripts named above
-accompany the deposit in its public repository,
-\url{https://github.com/papanokechi/pcf-delta}.
-
-\appendix
-\section{Inclusion--exclusion derivation of the cluster closed forms}
-\label{app:clusters}
-
-This appendix proves Equations~\eqref{eq:sig2}--\eqref{eq:sig3} by elementary
-inclusion--exclusion, upgrading Proposition~\ref{prop:sigma} from a numerically
-\textsc{verified} identity to a complete \textsc{structural} hand proof; the
-brute-force gate of \texttt{verify\_clusters.py} and the step-by-step gate of
-\texttt{verify\_inclusion\_exclusion.py} then confirm every line to $\sim10^{-54}$.
-
-Fix the tail $\{m,m+1,\dots\}$ with vertex weights $u_i>0$ and power sums
-$p_j=\sum_{i\ge m}u_i^{\,j}$. Recall from~\eqref{eq:cluster} that
-$\sigma_k=\sum\prod_{i\in T}u_i$ runs over $k$-subsets $T$ with no two consecutive
-indices, and let $e_k=\sum_{|T|=k}\prod_{i\in T}u_i$ be the \emph{unrestricted}
-elementary symmetric sum. Newton's identities give
-\begin{equation}\label{eq:newton}
-  e_2=\tfrac12\big(p_1^2-p_2\big),\qquad
-  e_3=\tfrac16\big(p_1^3-3p_1p_2+2p_3\big).
-\end{equation}
-
-\begin{proof}[Derivation of~\eqref{eq:sig2}]
-Each unrestricted pair $\{i<j\}$ is either non-consecutive (counted by $\sigma_2$)
-or consecutive ($j=i+1$); the consecutive pairs sum to $a_1=\sum_i u_iu_{i+1}$.
-Hence $\sigma_2=e_2-a_1=\tfrac12(p_1^2-p_2)-a_1$.
-\end{proof}
-
-\begin{proof}[Derivation of~\eqref{eq:sig3}]
-Classify the unrestricted triples $\{i<j<k\}$ by their number of consecutive pairs.
-Let $\mathcal B$ be those with at least one, so $\sigma_3=e_3-\Sigma(\mathcal B)$,
-where $\Sigma$ denotes the weighted sum $\sum\prod_{i\in T}u_i$. A triple has either
-\emph{exactly one} consecutive pair --- an adjacent pair plus an isolated third
-vertex; call this set $\mathcal B_1$ --- or \emph{two} --- a run $\{i,i+1,i+2\}$;
-call this $\mathcal B_2$ --- and $\Sigma(\mathcal B_2)=\sum_i u_iu_{i+1}u_{i+2}=t$.
-
-Expand the product of the adjacency sum and the first power sum:
-\[
-  a_1p_1=\Big(\sum_i u_iu_{i+1}\Big)\Big(\sum_r u_r\Big)
-        =\sum_i\sum_r u_iu_{i+1}u_r .
-\]
-Split the inner sum according to whether $r\in\{i,i+1\}$. The terms with $r=i$ or
-$r=i+1$ sum to $\sum_i u_iu_{i+1}(u_i+u_{i+1})=c$. The remaining terms, with
-$r\notin\{i,i+1\}$, each form a triple --- the adjacent pair $\{i,i+1\}$ together
-with a distinct third vertex $r$ --- whose total we call $W$, so that $a_1p_1=c+W$.
-In $W$ each member of $\mathcal B_1$ is counted once (its unique adjacent pair fixes
-$(i,i+1)$ and $r$ is the isolated vertex), while each run $\{a,a+1,a+2\}$ in
-$\mathcal B_2$ is counted twice (as the pair $(a,a+1)$ with $r=a+2$, and as the pair
-$(a+1,a+2)$ with $r=a$). Thus $W=\Sigma(\mathcal B_1)+2t$, and
-\[
-  \Sigma(\mathcal B)=\Sigma(\mathcal B_1)+t=(W-2t)+t=W-t=a_1p_1-c-t .
-\]
-Subtracting from $e_3$ in~\eqref{eq:newton},
-\[
-  \sigma_3=e_3-\Sigma(\mathcal B)
-          =\tfrac16\big(p_1^3-3p_1p_2+2p_3\big)-a_1p_1+c+t . \qedhere
-\]
-\end{proof}
-
-\noindent The script \texttt{verify\_inclusion\_exclusion.py} checks each labelled
-step independently against brute force over a finite window
-($e_2,e_3$ against the elementary sums; $a_1$ against the adjacent pairs;
-$a_1p_1=c+W$; $W=\Sigma(\mathcal B_1)+2t$;
-$\Sigma(\mathcal B)=\Sigma(\mathcal B_1)+t$; and the two closed forms), for
-$(A,B,C)\in\{(1,0,1),(1,1,1),(2,1,3),(1,2,1)\}$, all to $\sim10^{-54}$.
+(\texttt{Basic.lean}, \texttt{Check.lean}; Theorem~\ref{thm:lean}). Public
+repository and Zenodo deposit are forthcoming (operator-gated); the deposited unit
+will supplement the companion growth-law note~\cite{growth}.
 
 \begin{thebibliography}{9}
 
@@ -623,34 +488,6 @@ Denominator-growth lemma \textsf{lem:Qgrowth} and the standard continuant $Q_n$.
 Zenodo concept DOI \texttt{10.5281/zenodo.19491767}
 (\url{https://doi.org/10.5281/zenodo.19491767}).
 
-\bibitem{gautschi}
-W.~Gautschi,
-\emph{Computational aspects of three-term recurrence relations},
-SIAM Review \textbf{9}(1) (1967), 24--82. DOI \texttt{10.1137/1009002}
-(\url{https://doi.org/10.1137/1009002}). Standard modern statement and attribution of
-Pincherle's theorem (minimal/recessive solutions of three-term recurrences and
-continued-fraction convergence).
-
-\bibitem{perron}
-O.~Perron,
-\emph{\"Uber Summengleichungen und Poincar\'esche Differenzengleichungen},
-Mathematische Annalen \textbf{84} (1921), 1--15. DOI \texttt{10.1007/BF01458689}
-(\url{https://doi.org/10.1007/BF01458689}). Perron's theorem on the asymptotics of
-Poincar\'e difference equations with growing coefficients.
-
-\bibitem{bt}
-G.~D.~Birkhoff and W.~J.~Trjitzinsky,
-\emph{Analytic theory of singular difference equations},
-Acta Mathematica \textbf{60} (1932), 1--89. DOI \texttt{10.1007/BF02398269}
-(\url{https://doi.org/10.1007/BF02398269}).
-
-\bibitem{wongli}
-R.~Wong and H.~Li,
-\emph{Asymptotic expansions for second-order linear difference equations},
-Journal of Computational and Applied Mathematics \textbf{41}(1--2) (1992), 65--94.
-DOI \texttt{10.1016/0377-0427(92)90239-T}
-(\url{https://doi.org/10.1016/0377-0427(92)90239-T}).
-
 \bibitem{dlmf}
 F.~W.~J.~Olver et al.\ (eds.),
 \emph{NIST Digital Library of Mathematical Functions},
@@ -668,9 +505,8 @@ version 1.3.0, \url{https://mpmath.org/}. Provides \texttt{nsum}, \texttt{digamm
 \paragraph{AI-assistance disclosure.}
 Prepared with AI assistance (GitHub Copilot; Anthropic Claude) for drafting,
 computer-algebra verification, and manuscript preparation. All numerical values were
-obtained by running the scripts named in the Code and Data Availability section; the
-Lean axiom cones were obtained by \texttt{\#print axioms}. The author takes
-responsibility for the content and for the placement of each claim within the
-four-grade epistemic partition.
+obtained by running the scripts named in Section~\ref{sec:code}; the Lean cones were
+obtained by \texttt{\#print axioms}. The author takes responsibility for the content
+and for the placement of each claim within the four-grade epistemic partition.
 
 \end{document}

@@ -1,0 +1,25 @@
+# --- regenerable scaffolding (never the system of record) ---
+# Lean build
+.lake/
+build/
+*.olean
+# Python
+__pycache__/
+*.pyc
+.venv/
+# LaTeX transients
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.toc
+*.synctex.gz
+# OS
+.DS_Store
+Thumbs.db
+
+# --- deposit/ is disposable: assembled fresh at deposit time, then deleted.
+#     Nothing canonical lives there, so it is never tracked. ---
+deposit/*
+!deposit/.gitkeep

@@ -1,4 +1,5 @@
 import PcfContinuant.Basic
+import PcfContinuant.Bracket
 
 open PcfContinuant
 
@@ -14,3 +15,9 @@ open PcfContinuant
 #print axioms rseq_bddAbove_of_rmaj
 #print axioms rseq_tendsto_ciSup
 #print axioms rseq_tendsto_of_rmaj_bddAbove
+#print axioms psum
+#print axioms psum_nonneg
+#print axioms rseq_ge_one_add_psum
+#print axioms rmaj_mul_one_sub_psum_le_one
+#print axioms rinf_bracket
+#print axioms rseq_tendsto_under_psum_bdd

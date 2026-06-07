@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Push is operator-gated. Agents commit freely; only the operator pushes.
+# Pushing to a public remote is publishing — an irreversible, public action that
+# belongs in the same tier as minting a Zenodo DOI.
+#
+# This hook is tracked in-repo (tools/hooks) and activated via
+#   git config core.hooksPath tools/hooks
+# so it is consistent across clones (unlike .git/hooks, which is not versioned).
+if [ "${SIARC_OPERATOR:-0}" != "1" ]; then
+  echo "BLOCKED: push is operator-gated." >&2
+  echo "Agents commit freely; only the operator pushes." >&2
+  echo "To push, set SIARC_OPERATOR=1 in an interactive operator shell:" >&2
+  echo "    SIARC_OPERATOR=1 git push" >&2
+  exit 1
+fi
+exit 0

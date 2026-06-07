@@ -1,0 +1,4 @@
+# deposit/ is disposable.
+# Assembled fresh from root + src/ + lean/ at deposit time, then deleted.
+# Nothing canonical lives here, so it can never become a stale source of truth.
+# This .gitkeep only preserves the empty directory in git.

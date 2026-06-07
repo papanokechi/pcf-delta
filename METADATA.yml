@@ -1,0 +1,40 @@
+# Single source of truth for this project's Zenodo / submission metadata.
+# Edit here only; the validator (tools/validate_metadata.py) checks the manuscript
+# and deposit artifacts against this file before any mint.
+slug: pcf-delta
+title: "The growth-law correction constant δ = log R∞ of the quadratic polynomial continued fraction: structure, a closed-form bracket, and certified high-precision values"
+version: "1.1"
+upload_type: publication
+publication_type: article
+creators:
+  - name: "Papanokechi"
+    orcid: "0009-0000-6192-8273"
+    affiliation: "Independent researcher, Yokohama, Japan"
+language: eng
+license: "CC-BY-4.0"          # paper unit; bundled code (src/, lean/) is Apache-2.0
+keywords:
+  - polynomial continued fraction
+  - convergent denominators
+  - independence polynomial
+  - cluster expansion
+  - digamma function
+  - high-precision computation
+  - integer-relation detection
+  - Lean 4
+  - formal verification
+github: "https://github.com/papanokechi/pcf-delta"
+# pcf-delta's OWN Zenodo identifiers (minted at v1.0 deposit, 2026-06-07).
+# NOTE: the concept (cite-all) DOI is 20578400 — NOT the companion note 20564681.
+zenodo:
+  concept_doi: "10.5281/zenodo.20578400"     # cite-all; stable across versions
+  v1_0_version_doi: "10.5281/zenodo.20578401"  # frozen v1.0 (8 pp); archive/
+related_identifiers:
+  - identifier: "10.5281/zenodo.20564681"   # companion growth-law note (concept)
+    relation: isSupplementTo
+    resource_type: publication-preprint
+  - identifier: "10.5281/zenodo.19491767"   # ladder paper (concept)
+    relation: references
+    resource_type: publication-preprint
+  - identifier: "https://github.com/papanokechi/pcf-delta"
+    relation: isSupplementedBy
+    resource_type: software

@@ -10,7 +10,7 @@ V(A,B,C) = 1 + K_{n≥1} 1/(A n² + B n + C),   A,B,C ≥ 1.
 
 Its convergent numerators `p` and denominators `q` satisfy the same second-order
 recurrence `s (n+2) = b (n+2) · s (n+1) + s n`, with `b n = A n² + B n + C`. This
-repo formalizes the two structural facts that the analytic growth-constant analysis
+repo formalizes the finitary structural facts that the analytic growth-constant analysis
 (`delta_characterization.md`, the deposited growth-law note) rests on — the parts
 that are *finitary* and so admit a clean, sorry-free proof.
 
@@ -35,24 +35,31 @@ warnings/errors**.
 | `rseq_bddAbove_of_rmaj` | if the partial products are bounded above, so is `rseq`                                 | `[propext, Classical.choice, Quot.sound]` |
 | `rseq_tendsto_ciSup` | **monotone convergence**: `rseq` bounded above `⟹ Rₙ → ⨆ₙ Rₙ`                            | `[propext, Classical.choice, Quot.sound]` |
 | `rseq_tendsto_of_rmaj_bddAbove` | **`Rₙ → R∞` exists** when `∏(1+uₖ)` (i.e. `Σ uₙ`) is bounded above             | `[propext, Classical.choice, Quot.sound]` |
+| `psum`            | partial sum `S_n = Σ_{k=2}^n uₖ` (mirrors the `rseq`/`rmaj` indexing)                          | `[propext, Classical.choice, Quot.sound]` |
+| `psum_nonneg`     | `S_n ≥ 0` for `u ≥ 0`                                                                          | `[propext, Classical.choice, Quot.sound]` |
+| `rseq_ge_one_add_psum` | **the finitary lower bound** `1 + S_n ≤ Rₙ`                                              | `[propext, Classical.choice, Quot.sound]` |
+| `rmaj_mul_one_sub_psum_le_one` | **the finitary upper bound** `(∏_{k=2}^n(1+uₖ))·(1 − S_n) ≤ 1` (exact identity `(1−S_n)−(1+u)(1−S_n−u)=u·S_n+u²≥0`) | `[propext, Classical.choice, Quot.sound]` |
+| `rinf_bracket`    | **the closed-form bracket** `1 + S ≤ R∞ ≤ 1/(1 − S)` (conditional on `Σ uₙ` bounded above and `S = ⨆ₙ S_n < 1`) | `[propext, Classical.choice, Quot.sound]` |
+| `rseq_tendsto_under_psum_bdd` | `Rₙ → R∞` under the same `psum`-boundedness/`S<1` hypotheses                     | `[propext, Classical.choice, Quot.sound]` |
 
 `casoratian_step`, `casoratian_eq`, `pq_casoratian` are stated over an arbitrary
 `CommRing`. The `rseq_*`/`rmaj_*` results are specialized to `ℝ` (the application
 domain). Together these are the exact **Casoratian identity** (item 2 of
-`delta_characterization.md`), the **monotone, bounded-below** structure, and now the
-**limit existence** `Rₙ → R∞` (item 3) via Mathlib's `tendsto_atTop_ciSup`, reduced to
-the single finitary hypothesis that the partial products `∏(1+uₖ)` are bounded above
-(equivalently `Σ uₙ < ∞`).
+`delta_characterization.md`), the **monotone, bounded-below** structure, the
+**limit existence** `Rₙ → R∞` (item 3) via Mathlib's `tendsto_atTop_ciSup`, and now the
+**closed-form two-sided bracket** `1 + S ≤ R∞ ≤ 1/(1 − S)` (item 4), all reduced to
+the single finitary hypothesis that the partial sums `S_n = Σ uₖ` are bounded above
+(equivalently `Σ uₙ < ∞`) together with `S = ⨆ₙ S_n < 1`.
 
 ## What is OUT OF SCOPE (deliberately not formalized — labelled hypotheses)
 
 These are analytic and remain hand-proved / numerically verified elsewhere; they are
 **not** claimed here:
 
-* the boundedness hypothesis itself — that `Σ uₙ < ∞` (equivalently the partial products
-  `∏(1+uₖ)` are bounded above); the *value* of the limit and the upper bound `R∞ ≤ 1/(1−S)`
-  (needs the analytic tail estimate / a convergent dominating series);
-* the closed-form digamma residue for `S` and the bracket `log(1+S) ≤ δ ≤ −log(1−S)`;
+* the boundedness hypothesis itself — that `Σ uₙ < ∞` (equivalently the partial sums
+  `S_n = Σ uₖ` are bounded above) and the inequality `S < 1`; the *value* of the limit;
+* the closed-form digamma residue for `S` (the bracket `log(1+S) ≤ δ ≤ −log(1−S)` for
+  `δ = log R∞` then follows from `rinf_bracket` by monotonicity of `log`);
 * the Γ-product constant `K_Γ = −log(Γ(1−r₁)Γ(1−r₂))` and Stirling/Gamma-ratio
   asymptotics;
 * the conjecture that `δ = log R∞` is non-elementary.
@@ -68,7 +75,7 @@ v4.30.0` (`lakefile.toml`, `lake-manifest.json`).
 ```sh
 lake exe cache get      # fetch prebuilt Mathlib oleans
 lake build              # builds PcfContinuant (zero warnings/errors)
-lake env lean Check.lean   # prints the twelve axiom cones above
+lake env lean Check.lean   # prints the eighteen axiom cones above
 ```
 
 ## License
