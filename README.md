@@ -1,71 +1,103 @@
 # pcf-delta
 
-The growth-law correction constant **δ = log R∞ > 0** of the quadratic polynomial
-continued fraction *V(A,B,C) = 1 + K\_{n≥1} 1/(An² + Bn + C)* (integers A,B,C ≥ 1):
-its structure, an elementary two-sided bracket, certified high-precision values, a
-rigorous integer-relation null, and a machine-checked finitary core in Lean 4.
+The growth-law correction constant **δ = log R∞** of the quadratic polynomial
+continued fraction *V(A,B,C) = 1 + K_{n≥1} 1/(An²+Bn+C)*, integers *A,B,C ≥ 1*:
+structure, a closed-form bracket, and certified high-precision values.
 
-This is the **deposit unit** for the δ-characterization note. It characterizes the
-constant δ that the companion quadratic growth-law note introduces and leaves
-undetermined.
+- **Slug ↔ repo ↔ Zenodo concept:** `pcf-delta` ↔ `papanokechi/pcf-delta` ↔
+  `10.5281/zenodo.20578400` (concept, cite-all).
+- **Companion** growth-law note (parent, `isSupplementTo`): `10.5281/zenodo.20564681`.
 
-## Contents
+## Layout (durable convention)
 
-- **Paper:** `delta_characterization.pdf` (source `delta_characterization.tex`).
-- **Reproducibility scripts** (`mpmath`):
-  - `harness_rinf.py` — two-solution frame, R∞, value V.
-  - `continuant_verify.py` — exact independence-polynomial check.
-  - `S_closed_form.py`, `S_confluent.py` — closed forms for S (incl. degenerate
-    repeated-pole triples).
-  - `verify_clusters.py` — the σ₂, σ₃ cluster-identity gate (vs brute force).
-  - `hp_delta_v2.py`, `finalize_m2.py` — the high-precision δ values (Table 2),
-    output `delta_values_m2.txt`.
-  - `verify_forward_crosscheck.py` — independent forward + Neville cross-check.
-  - `hp_probe.py`, `pslq_stability.py` — the integer-relation nulls.
-- **Data:** `delta_values_m2.txt` — the M2 output Table 2 is read from.
-- **Lean core:** `lean/pcf_continuant/` — `Check.lean` prints the axiom cones for the
-  twelve declarations (`casoratian_step`, `casoratian_eq`, `pq_casoratian`,
-  `rseq_ge_one`, `rseq_mono`, `rseq_monotone`, `rmaj_ge_one`, `rmaj_mono`,
-  `rseq_le_rmaj`, `rseq_bddAbove_of_rmaj`, `rseq_tendsto_ciSup`,
-  `rseq_tendsto_of_rmaj_bddAbove`), each a subset of
-  `{propext, Classical.choice, Quot.sound}` with no `sorryAx`.
+```
+pcf-delta/
+  delta_characterization.pdf   LIVE canonical manuscript (root only; bare name)
+  delta_characterization.tex   LIVE source
+  COVER_LETTER.md              editor cover letter (live)
+  METADATA.yml                 single source of truth for deposit fields
+  claims.jsonl                 SIARC ledger (one claim per line)
+  src/                         reproducibility scripts (Apache-2.0)
+  lean/pcf_continuant/         machine-checked finitary core (Apache-2.0)
+  archive/                     FROZEN, read-only (delta_characterization_v1.0.*)
+  deposit/                     DISPOSABLE; assembled fresh at deposit, then deleted
+  tools/                       validate_metadata.py + hooks/pre-push
+  README.md                    this file
+```
 
-## Licensing (dual)
+### Versioning
 
-- **Paper, text, and prose** — the manuscript (`.tex`/`.pdf`) and this README — are
-  licensed under **Creative Commons Attribution 4.0 International (CC BY 4.0)**; see
-  the top-level `LICENSE`.
-- **Code** — the ten Python scripts and the Lean project under
-  `lean/pcf_continuant/` — is licensed under the **Apache License 2.0**; see the
-  top-level `LICENSE-CODE` (and the Lean package's own `lean/pcf_continuant/LICENSE`).
+- **One live file at root, bare-named.** The live `delta_characterization.{tex,pdf}`
+  always holds the *current* version; the version itself is recorded in
+  `METADATA.yml` (`version:`), on the PDF title page (`pcf-delta vX.Y draft`), and in
+  `claims.jsonl`. There is never a second bare-named copy at root, so size/timestamp
+  are never needed to disambiguate.
+- **Frozen versions are versioned in `archive/`.** Finalizing a version copies it to
+  `archive/delta_characterization_vX.Y.pdf` (read-only, never re-opened to "refresh").
+  The live root file then advances to the next version.
+- **Deposit artifacts carry the version in the filename.** At deposit time the
+  candidate is assembled into `deposit/` as `delta_characterization_vX.Y.pdf`, whose
+  filename version must equal `METADATA.version` and the PDF title-page version.
 
-## Reproducing
+The current live version is **v1.1** (adds the machine-checked closed-form bracket
+`rinf_bracket` and an inclusion–exclusion appendix for σ₂,σ₃ over the deposited v1.0).
 
-- **Numerics:** install `mpmath` (e.g. `pip install mpmath`) and run any of the
-  scripts above with Python 3, e.g. `python finalize_m2.py`. The δ map is certified
-  ≥39 digits per triple, ≥44 for (1,0,1).
-- **Lean core:** install the pinned toolchain (`leanprover/lean4:v4.30.0`, Mathlib
-  `rev=v4.30.0`) via `elan`, then from `lean/pcf_continuant/` run
-  `lake exe cache get` (to fetch Mathlib oleans) and verify the axiom cones with
-  `lake env lean Check.lean`. PROVEN means a clean axiom cone with no `sorryAx`, not
-  merely a green build.
+## Epistemic convention (SIARC four-class)
 
-## Companion deposit
+- **PROVEN** = machine-checked in Lean 4 with a clean axiom cone (a subset of
+  `{propext, Classical.choice, Quot.sound}`, no `sorryAx`, no `sorry`/`admit`,
+  build exit 0). "PROVEN" means the **axiom cone**, not merely a green build.
+- **STRUCTURAL** = complete elementary hand proof, not yet formalized.
+- **VERIFIED** = confirmed numerically for the stated finite cases.
+- **CONJECTURED** = supported by evidence, not established.
 
-This note characterizes the additive correction constant δ = log R∞ that the
-quadratic growth-law note introduces and leaves undetermined. The Zenodo metadata
-records this as `isSupplementTo` the growth-law note (concept DOI
-`10.5281/zenodo.20564681`).
+See `claims.jsonl` for the per-claim grading.
 
-## Citation / DOI
+## Reproduce
 
-Deposited on Zenodo (2026-06-07, version 1.0):
+Numerics (mpmath):
 
-- **Concept DOI** (cite-all, resolves to the latest version):
-  [`10.5281/zenodo.20578400`](https://doi.org/10.5281/zenodo.20578400)
-- **Version DOI** (this deposit, v1.0):
-  [`10.5281/zenodo.20578401`](https://doi.org/10.5281/zenodo.20578401)
+```
+python src/bracket_gate.py                 # the bracket gate
+python src/verify_clusters.py              # σ2,σ3 final-form gate
+python src/verify_inclusion_exclusion.py   # step-by-step appendix derivation gate
+python src/continuant_verify.py            # exact independence-polynomial check
+python src/S_closed_form.py src/S_confluent.py
+python src/hp_delta_v2.py src/finalize_m2.py   # certified δ values -> delta_values_m2.txt
+python src/pslq_stability.py               # integer-relation null
+```
 
-The Zenodo metadata records this work as `isSupplementTo` the companion growth-law
-note (concept DOI `10.5281/zenodo.20564681`). No GitHub release is cut and the
-Zenodo webhook is OFF; see `CITATION.cff` for full citation metadata.
+Lean core (toolchain pinned `leanprover/lean4:v4.30.0`, Mathlib `rev=v4.30.0`):
+
+```
+cd lean/pcf_continuant
+lake build
+lake env lean Check.lean    # prints every axiom cone; the PROVEN gate
+```
+
+## Before any deposit or submission
+
+Run the metadata validator (must exit 0):
+
+```
+python tools/validate_metadata.py
+```
+
+It checks: ORCID exact `0009-0000-6192-8273`; version agreement
+(METADATA ↔ PDF title page ↔ deposit filename); AI-disclosure byte-identical to the
+frozen org boilerplate (`../_boilerplate/disclosures.md`, after LaTeX/Markdown
+normalization); repo URL present in both manuscript and metadata; companion DOI and
+GitHub linked in `related_identifiers`; license = `CC-BY-4.0`.
+
+## Publish boundary (operator-gated)
+
+Agents **commit** freely; only the operator **pushes** or **mints**. The tracked
+`tools/hooks/pre-push` hard-blocks pushes unless `SIARC_OPERATOR=1` is set in an
+interactive operator shell. Activate the hook in any fresh clone with:
+
+```
+git config core.hooksPath tools/hooks
+```
+
+License: paper unit (`delta_characterization.*`) is **CC-BY-4.0**; bundled code
+(`src/`, `lean/`) is **Apache-2.0**.
