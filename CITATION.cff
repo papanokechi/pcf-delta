@@ -1,0 +1,72 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it using the metadata below."
+type: software
+title: "pcf-delta: The growth-law correction constant delta = log R_inf of the quadratic polynomial continued fraction - structure, a closed-form bracket, and certified high-precision values"
+abstract: >-
+  A characterization of the additive correction constant delta = log R_inf > 0
+  that the companion growth-law note introduces and leaves undetermined for the
+  quadratic polynomial continued fraction V(A,B,C) = 1 + K_{n>=1} 1/(A n^2 + B n + C),
+  integers A,B,C >= 1. With b_k = A k^2 + B k + C, continuant
+  q_0 = 1, q_1 = b_1, q_n = b_n q_{n-1} + q_{n-2}, scaled partial quotients
+  u_n = 1/(b_{n-1} b_n) and S = sum_{n>=2} u_n, the scaled limit is
+  R_inf = lim q_n / prod_{k<=n} b_k and delta = log R_inf. Contributions:
+  (i) R_inf is exactly the independence polynomial of the path graph on the indices,
+  giving the elementary two-sided bracket log(1+S) <= delta <= -log(1-S);
+  (ii) exact closed forms for the cluster sums sigma_2, sigma_3, machine-verified
+  against brute-force enumeration to residuals ~1e-54; (iii) certified
+  high-precision values of delta for nine triples (>=39 correct digits each,
+  >=44 for (1,0,1): delta(1,0,1) = 0.12385719436062639272850498970259084096757955...)
+  via an exact downward recurrence, with an independent forward + Neville cross-check
+  and an exact confluent-polygamma seed for degenerate triples such as (1,2,1) where
+  S = pi^2/3 - 13/4; (iv) a rigorous null: no low-height integer relation is found
+  for V, R_inf, or delta (mpmath identify at 100 digits; PSLQ over
+  {1, pi, log 2, gamma, Catalan, zeta(3)}), with a precision-stability test showing
+  the high-height PSLQ vectors are working-precision artifacts; (v) a machine-checked
+  finitary core in Lean 4 / Mathlib (toolchain pinned lean4 v4.30.0, Mathlib v4.30.0):
+  the Casoratian identity and the existence of R_inf = lim R_n by monotone-bounded
+  convergence, with clean axiom cones. Epistemic grades (SIARC four-class): PROVEN
+  (Lean core), STRUCTURAL (recurrence, bracket, closed forms), VERIFIED (cluster
+  identities and tabulated delta values, mpmath), CONJECTURED (delta has no low-height
+  elementary closed form; irrationality of delta is open).
+authors:
+  # ORCID source-verified from the ORCID registry page.
+  - family-names: "Papanokechi"
+    orcid: "https://orcid.org/0009-0000-6192-8273"
+version: "1.0"
+date-released: "2026-06-07"
+license: CC-BY-4.0
+repository-code: "https://github.com/papanokechi/pcf-delta"
+keywords:
+  - "polynomial continued fractions"
+  - "continued fraction convergents"
+  - "growth law correction constant"
+  - "independence polynomial"
+  - "high-precision computation"
+  - "integer relation detection"
+  - "Lean 4"
+  - "formal verification"
+  - "transcendental constants"
+  - "SIARC"
+references:
+  # Companion quadratic growth-law note: it introduces delta = log R_inf and leaves
+  # it undetermined; this work characterizes that constant. DOI = its concept
+  # (cite-all) DOI; verified live (doi.org 302 -> zenodo.org/records/20565409) 2026-06-07.
+  - type: article
+    title: "An exact growth constant for the quadratic polynomial continued fraction (structural proof; numerically verified)"
+    authors:
+      - family-names: "Papanokechi"
+    doi: "10.5281/zenodo.20564681"
+    notes: "Companion; introduces delta, left undetermined. isSupplementTo target."
+    year: 2026
+  # Context: the deposited ladder paper; concept DOI verified live 2026-06-07
+  # (doi.org 302 -> zenodo.org/records/19491768).
+  - type: article
+    title: "Proved logarithmic ladder, 4/pi Casoratian, and 482 irrational constants"
+    authors:
+      - family-names: "Papanokechi"
+    doi: "10.5281/zenodo.19491767"
+    notes: "Context reference."
+    year: 2026
+# DRAFT - NOT YET DEPOSITED. No Zenodo record, no GitHub release, no webhook.
+# No identifier/DOI for THIS work is asserted here; its version DOI is minted by
+# Zenodo at publish time (operator step). All irreversible actions remain operator-gated.

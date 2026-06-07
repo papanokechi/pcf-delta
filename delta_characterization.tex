@@ -1,0 +1,512 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Rinf}{R_\infty}
+\DeclareMathOperator{\Res}{Res}
+
+\title{The growth-law correction constant\\
+$\delta=\log R_\infty$ of the quadratic polynomial\\
+continued fraction: structure, a closed-form bracket,\\
+and certified high-precision values}
+\author{Papanokechi\\
+\small ORCID: \href{https://orcid.org/0009-0000-6192-8273}{0009-0000-6192-8273}}
+\date{June 2026 \quad(\texttt{pcf-delta} draft)}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For integers $A,B,C\ge1$ let $b_k=Ak^2+Bk+C$ and let $q_n$ be the standard
+continuant denominators of the polynomial continued fraction
+$V(A,B,C)=1+\mathbf{K}_{n\ge1}\,1/(An^2+Bn+C)$ ($q_0=1$, $q_1=b_1$,
+$q_n=b_nq_{n-1}+q_{n-2}$). A companion note proves the growth law
+$\log q_n=n\log A+2\log(n!)+\tfrac{B}{A}\log n+(K_\Gamma+\delta)+\kappa/n+O(1/n^2)$,
+in which the product constant $K_\Gamma=-\log(\Gamma(1-r_1)\Gamma(1-r_2))$ is
+closed-form but the correction $\delta=\log\Rinf>0$, with
+$\Rinf=\lim_n q_n/\prod_{k\le n}b_k$, is left undetermined. This note
+\emph{characterizes} $\delta$. We show that the scaled limit $\Rinf$ is exactly
+the \emph{independence polynomial of a path graph} evaluated at the weights
+$u_n=1/(b_{n-1}b_n)$, giving a cluster expansion $\Rinf=\sum_{k\ge0}\sigma_k$ with
+$\sigma_k\le S^k$, $S=\sum_{n\ge2}u_n$. From it we derive a closed-form two-sided
+bracket $\log(1+S)\le\delta\le-\log(1-S)$, with $S$ in closed digamma form
+(generic poles) and confluent polygamma form (degenerate poles; e.g.\
+$S(1,2,1)=\pi^2/3-13/4$ exactly). Using the first three cluster sums
+$\sigma_1,\sigma_2,\sigma_3$ in exact closed form (machine-verified against
+brute-force enumeration to $\sim10^{-54}$) to seed an exact downward recurrence, we
+evaluate $\delta$ to certified high precision: $\delta(1,0,1)$ to $\ge44$ digits,
+with a nine-triple table, each value certified two internal ways and cross-checked
+by a fully independent forward/Neville extrapolation. An integer-relation
+(PSLQ/\texttt{identify}) search returns no low-height closed form, and a
+precision-stability test shows the uncontrolled relations to be numerical
+artifacts; we record $\delta$ as conjecturally a new transcendental constant of the
+family. Finally, the finitary structural core --- the Casoratian identity and the
+monotone--bounded convergence $R_n\to\Rinf$ --- is machine-checked in Lean~4/Mathlib
+with clean axiom cones (no \texttt{sorry}).
+\end{abstract}
+
+\noindent\textbf{2020 MSC:} 11J70 (primary), 11A55, 33B15, 05C31.\quad
+\textbf{Keywords:} polynomial continued fraction, convergent denominators,
+independence polynomial, cluster expansion, digamma function, high-precision
+computation, integer-relation detection.
+
+\section{Introduction}
+
+The convergent denominators of the quadratic polynomial continued fraction
+$V(A,B,C)=1+\mathbf{K}_{n\ge1}\,1/(An^2+Bn+C)$, integers $A,B,C\ge1$, obey
+$q_0=1$, $q_1=b_1$, $q_n=b_nq_{n-1}+q_{n-2}$ with $b_k=Ak^2+Bk+C$. A companion
+note~\cite{growth} establishes the exact two-sided growth law
+\begin{equation}\label{eq:law}
+  \log q_n=n\log A+2\log(n!)+\tfrac{B}{A}\log n+\big(K_\Gamma+\delta\big)
+           +\frac{\kappa}{n}+O(1/n^2),
+\end{equation}
+where $r_1,r_2$ are the roots of $Ax^2+Bx+C$,
+$K_\Gamma=-\log(\Gamma(1-r_1)\Gamma(1-r_2))$ is the \emph{product constant} (at
+$B=0$ equal to $\log(\sinh(\pi\sqrt{C/A})/(\pi\sqrt{C/A}))$),
+$\kappa=\tfrac12(B^2/A^2+B/A-2C/A)$, and
+\begin{equation}\label{eq:delta}
+  \delta=\log\Rinf>0,\qquad \Rinf=\lim_{n\to\infty}\frac{q_n}{\prod_{k=1}^n b_k}
+\end{equation}
+is the \emph{correction constant} produced by the $+q_{n-2}$ term of the recurrence.
+The product piece $K_\Gamma$ is closed-form; the companion note claims \emph{no}
+closed form for $\delta$ and treats it as a black box. This note opens the box.
+
+Our contributions are, in increasing order of analytic depth:
+\begin{enumerate}
+\item[(i)] \textbf{Structure.} $\Rinf$ is exactly the independence polynomial of
+the path graph on $\{2,\dots,n\}$ in the limit, evaluated at $u_n=1/(b_{n-1}b_n)$
+(Proposition~\ref{prop:indpoly}); equivalently a Mayer-type cluster expansion
+$\Rinf=\sum_k\sigma_k$ with $\sigma_k\le S^k$.
+\item[(ii)] \textbf{A closed-form bracket.} $\log(1+S)\le\delta\le-\log(1-S)$
+(Proposition~\ref{prop:bracket}), where $S=\sum_{n\ge2}u_n$ is closed-form via a
+digamma residue sum, with a confluent polygamma form at degenerate poles; one
+degenerate value is exactly rational-plus-$\pi^2$: $S(1,2,1)=\pi^2/3-13/4$.
+\item[(iii)] \textbf{Certified high precision.} Exact closed forms for
+$\sigma_1,\sigma_2,\sigma_3$ seed an exact downward recurrence, yielding $\delta$ to
+$\ge44$ digits for $(1,0,1)$ and a nine-triple table (Section~\ref{sec:hp}); each
+value is certified by seed-order independence and self-convergence, and
+cross-checked by an independent extrapolation method.
+\item[(iv)] \textbf{Non-elementarity (conjectural).} An integer-relation search
+finds no low-height closed form, and a precision-stability test exhibits the
+uncontrolled relations as artifacts (Section~\ref{sec:null}).
+\item[(v)] \textbf{A machine-checked core.} The finitary structural facts on which
+(i)--(iii) rest --- the Casoratian identity and the monotone--bounded convergence
+$R_n\to\Rinf$ --- are formalized in Lean~4/Mathlib with clean axiom cones
+(Section~\ref{sec:lean}).
+\end{enumerate}
+
+\paragraph{Standing assumptions.}
+Throughout $A,B,C$ are integers $\ge1$, so $b_k=Ak^2+Bk+C\ge A+B+C\ge3>0$ for all
+$k\ge1$, $q_n>0$, and $P_n:=\prod_{k=1}^nb_k>0$. The roots satisfy
+$r_1+r_2=-B/A<0$, $r_1r_2=C/A>0$, hence either form a complex-conjugate pair or are
+two negative reals; in all cases $\operatorname{Re}r_i<0$.
+
+\paragraph{Epistemic convention.}
+We use the four-class SIARC partition. \textbf{PROVEN} = machine-checked in Lean
+with a clean axiom cone (a subset of $\{$\texttt{propext}, \texttt{Classical.choice},
+\texttt{Quot.sound}$\}$ and no
+\texttt{sorryAx}); \textbf{STRUCTURAL} = complete elementary hand proof, not yet
+formalized; \textbf{VERIFIED} = confirmed numerically for the stated finite cases;
+\textbf{CONJECTURED} = supported by evidence, not established. Each numbered result
+below is tagged accordingly, and Section~\ref{sec:status} collects the grading. All
+numerical claims are reproduced by the scripts named in Section~\ref{sec:code}.
+
+\section{The scaled recurrence and the Casoratian frame}\label{sec:frame}
+
+Let $R_n:=q_n/P_n$, so $R_0=R_1=1$. The convergent numerators $p_n$
+($p_{-1}=1,p_0=1$) satisfy the same second-order recurrence; set $P^{\,\mathrm{num}}_n:=p_n/P_n$.
+
+\begin{lemma}[Scaled recurrence; \textsc{structural}, Lean core in
+Section~\ref{sec:lean}]\label{lem:scaled}
+For all $n\ge2$,
+\[
+  R_n=R_{n-1}+u_n R_{n-2},\qquad u_n:=\frac{1}{b_{n-1}b_n}>0 .
+\]
+Consequently $(R_n)$ is strictly increasing, bounded above by
+$\prod_{k\ge2}(1+u_k)<\infty$, and converges to a limit
+$\Rinf\in(1,\infty)$ with $\Rinf-R_n=O(1/n^3)$; thus $\delta=\log\Rinf>0$.
+\end{lemma}
+
+\begin{proof}
+Divide $q_n=b_nq_{n-1}+q_{n-2}$ by $P_n=b_nP_{n-1}=b_nb_{n-1}P_{n-2}$ to get
+$R_n=R_{n-1}+R_{n-2}/(b_{n-1}b_n)$. Since $u_n>0$ and $R_0,R_1>0$, induction gives
+$R_n>0$ and the increment $R_n-R_{n-1}=u_nR_{n-2}>0$, so $(R_n)$ strictly increases;
+monotonicity gives $R_{n-2}\le R_{n-1}$, whence $R_n\le R_{n-1}(1+u_n)$ and
+$R_n\le\prod_{k=2}^n(1+u_k)$. As $b_{k-1}b_k\ge A^2(k-1)^2k^2$, the series
+$\sum_k u_k=O(\sum k^{-4})$ converges, so the product converges and $(R_n)$ is
+bounded; a monotone bounded sequence converges to $\Rinf\ge R_2=1+u_2>1$. The tail
+estimate $\Rinf-R_n=\sum_{m>n}u_mR_{m-2}\le\Rinf\sum_{m>n}u_m=O(1/n^3)$ follows by
+comparison with $\int_n^\infty t^{-4}\,dt$.
+\end{proof}
+
+\begin{lemma}[Casoratian; \textsc{proven}, Section~\ref{sec:lean}]\label{lem:caso}
+The discrete Wronskian of $p_n,q_n$ is $p_nq_{n-1}-p_{n-1}q_n=(-1)^{n-1}$; hence,
+in scaled variables,
+\[
+  P^{\,\mathrm{num}}_nR_{n-1}-P^{\,\mathrm{num}}_{n-1}R_n
+   =\frac{(-1)^{n-1}}{\,b_n\big(\prod_{k=1}^{n-1}b_k\big)^2\,}.
+\]
+\end{lemma}
+
+The Wronskian decays like $P_n^{-2}\asymp(n!)^{-4}$, which is why the
+\emph{value} $V=\lim p_n/q_n$ converges super-geometrically (matched to
+$77$--$117$ digits at $N\approx4000$) while $\Rinf=R_n$ converges only like
+$1/n^3$. The slow convergence of $R_n$ is what forces the dedicated high-precision
+method of Section~\ref{sec:hp}; a naive forward recurrence stalls at $\sim25$--$38$
+digits.
+
+\section{$\Rinf$ as an independence polynomial}\label{sec:indpoly}
+
+The recurrence $R_n=R_{n-1}+u_nR_{n-2}$ is \emph{not} the classical continuant
+recurrence $K_n=x_nK_{n-1}+K_{n-2}$: the weight $u_n$ multiplies the
+\emph{second-order} term. It is instead the transfer recurrence of an independence
+polynomial.
+
+\begin{proposition}[Independence-polynomial identity; \textsc{verified} exactly,
+\textsc{structural}]\label{prop:indpoly}
+For every $n$,
+\[
+  R_n=\sum_{\substack{T\subseteq\{2,\dots,n\}\\ \text{no two consecutive}}}
+       \ \prod_{i\in T}u_i,
+\]
+the independence polynomial of the path graph on the vertices $\{2,\dots,n\}$
+(edges between consecutive integers), evaluated at vertex weights $u_i$. Letting
+$n\to\infty$,
+\begin{equation}\label{eq:cluster}
+  \Rinf=\sum_{k\ge0}\sigma_k,\qquad
+  \sigma_0=1,\quad \sigma_1=S=\sum_{n\ge2}u_n,\quad
+  \sigma_k=\!\!\sum_{\substack{T\subseteq\{2,3,\dots\},\ |T|=k\\ \text{gaps}\ge2}}
+            \prod_{i\in T}u_i .
+\end{equation}
+Because each non-consecutive $k$-subset is one of the unrestricted $k$-tuples
+(which double-count order, repeats, and adjacency), $0\le\sigma_k\le S^k$, so the
+series converges geometrically.
+\end{proposition}
+
+\begin{proof}
+Both sides satisfy the same recurrence and initial data. The empty set gives the
+constant term $1$ ($R_1=1$); a non-consecutive subset $T\subseteq\{2,\dots,n\}$
+either omits $n$ (contributing to $R_{n-1}$) or contains $n$, in which case it omits
+$n-1$ and the rest is a non-consecutive subset of $\{2,\dots,n-2\}$ with the factor
+$u_n$ (contributing $u_nR_{n-2}$). This is exactly $R_n=R_{n-1}+u_nR_{n-2}$, and the
+$n=1,2$ base cases match. The bound $\sigma_k\le S^k$ is the stated over-count.
+\end{proof}
+
+The cluster identity~\eqref{eq:cluster} is verified \emph{exactly} (subset
+dynamic-programming equals $R_n$ for all tested triples and all $n$) by the script
+\texttt{continuant\_verify.py}.
+
+\section{A closed-form two-sided bracket}\label{sec:bracket}
+
+\begin{proposition}[Bracket; \textsc{verified} all triples, \textsc{structural}]
+\label{prop:bracket}
+With $S=\sum_{n\ge2}u_n<1$,
+\[
+  1+S\le\Rinf\le\frac{1}{1-S}
+  \qquad\Longleftrightarrow\qquad
+  \log(1+S)\le\delta\le-\log(1-S).
+\]
+\end{proposition}
+
+\begin{proof}
+From $\Rinf=1+\sum_{n\ge2}u_nR_{n-2}$ and $R_{n-2}\ge1$ comes the lower bound
+$\Rinf\ge1+S$. For the upper bound, by~\eqref{eq:cluster} and $\sigma_k\le S^k$,
+$\Rinf=\sum_k\sigma_k\le\sum_k S^k=1/(1-S)$ (using $S<1$, which holds since
+numerically $S\le S(1,0,1)\approx0.1307$). Apply $\log$.
+\end{proof}
+
+It remains to put $S$ in closed form. Write $b_n=A(n-r_1)(n-r_2)$, so
+$1/(b_{n-1}b_n)$ has its poles in the multiset $\{r_1,r_2,1+r_1,1+r_2\}$.
+
+\begin{proposition}[Closed form for $S$; \textsc{verified} to $35$--$62$ digits]
+\label{prop:S}
+If the four poles are distinct,
+\begin{equation}\label{eq:Sdigamma}
+  S=-\sum_{\rho}\Res_\rho\,\psi(2-\rho),\qquad
+  \Res_\rho=\frac{1}{A^2\prod_{\sigma\ne\rho}(\rho-\sigma)},
+\end{equation}
+with $\psi$ the digamma function (the sum of residues vanishes, $\sum_\rho\Res_\rho=0$,
+reflecting $1/(b_{n-1}b_n)=O(n^{-4})$, so the individually divergent $\psi$-pieces
+combine convergently). For repeated poles, partial fractions over the multiset of
+multiplicities $m_\rho$ give the confluent form
+\begin{equation}\label{eq:Sconfluent}
+  S=-\sum_\rho a_{\rho,1}\,\psi(2-\rho)
+    +\sum_\rho\sum_{j\ge2}a_{\rho,j}\,
+       \frac{(-1)^j\,\psi^{(j-1)}(2-\rho)}{(j-1)!},
+\end{equation}
+$a_{\rho,j}$ the Laurent coefficients of $1/(b_{n-1}b_n)$ at $\rho$, with
+$\sum_\rho a_{\rho,1}=0$.
+\end{proposition}
+
+Equations~\eqref{eq:Sdigamma}--\eqref{eq:Sconfluent} are the termwise sums
+$\sum_{n\ge2}(n-\rho)^{-1}$ (regularized, $j=1$) and
+$\sum_{n\ge2}(n-\rho)^{-j}=(-1)^j\psi^{(j-1)}(2-\rho)/(j-1)!$ ($j\ge2$), standard
+polygamma series~\cite[\S5.15]{dlmf}. Both are confirmed against direct summation
+(\texttt{mpmath.nsum}) for distinct- and repeated-pole triples
+(\texttt{S\_closed\_form.py}, \texttt{S\_confluent.py}). A clean degenerate value:
+for $(A,B,C)=(1,2,1)$, $b_n=(n+1)^2$ has poles $\{-1,-1,0,0\}$ and
+\begin{equation}\label{eq:S121}
+  S(1,2,1)=\frac{\pi^2}{3}-\frac{13}{4}=0.0398681336964528729\ldots,
+\end{equation}
+matched to $10^{-40}$. (The frame requires $b_1>0$; triples with $b_1=0$, e.g.\
+$(1,-2,1)$, are excluded.) Table~\ref{tab:bracket} shows the bracket on
+representative triples.
+
+\begin{table}[t]
+\centering
+\caption{The closed-form bracket $\log(1+S)\le\delta\le-\log(1-S)$ on
+representative triples; $\delta$ from the high-precision method of
+Section~\ref{sec:hp}.}\label{tab:bracket}
+\begin{tabular}{lcccc}
+\toprule
+$(A,B,C)$ & $S$ & $\log(1+S)$ & $\delta$ & $-\log(1-S)$\\
+\midrule
+$(1,0,1)$ & $0.13066961899$ & $0.12281004$ & $0.12385719436$ & $0.14003204$\\
+$(1,0,2)$ & $0.080228466794$ & $0.077172562$ & $0.077741108481$ & $0.083629973$\\
+$(2,0,1)$ & $0.045720089039$ & $0.044705729$ & $0.044814419813$ & $0.046798243$\\
+$(1,1,1)$ & $0.065740306948$ & $0.063669682$ & $0.064033816183$ & $0.068000835$\\
+$(3,2,5)$ & $0.0068561031151$ & $0.0068327069$ & $0.0068373312816$ & $0.0068797142$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Certified high-precision values}\label{sec:hp}
+
+Because $R_n\to\Rinf$ only like $1/n^3$, the forward recurrence is useless beyond a
+few dozen digits. We instead run the \emph{exact downward recurrence}
+\begin{equation}\label{eq:downward}
+  T(m)=T(m+1)+u_m\,T(m+2),\qquad T(\infty)=1,\qquad \Rinf=T(2),
+\end{equation}
+where $T(m)$ is the independence polynomial of the tail $\{m,m+1,\dots\}$ (so
+$T(m)=\sum_{k\ge0}\sigma_k(m)$ with $\sigma_k(m)$ the order-$k$ cluster sum starting
+at $m$). The recurrence~\eqref{eq:downward} is exact, so \emph{all} error lives in
+the seed $T(M+1),T(M+2)$ at the truncation index $M$. Truncating the cluster series
+at order $p$ leaves seed error $\sim\sigma_{p+1}=O(M^{-3(p+1)})$, i.e.\ about
+$3(p+1)$ correct digits per decade of $M$. We use $p=3$ ($\sim12$ digits/decade),
+for which exact closed forms are available:
+\begin{align}
+  \sigma_2 &= \tfrac12\big(p_1^2-p_2\big)-a_1, \label{eq:sig2}\\
+  \sigma_3 &= \tfrac16\big(p_1^3-3p_1p_2+2p_3\big)-a_1p_1+c+t, \label{eq:sig3}
+\end{align}
+with power sums $p_j=\sum_{n\ge m}u_n^j$ (and $p_1=\sigma_1(m)=S(m)$ from
+Proposition~\ref{prop:S}, exact via $\psi$), and adjacency sums
+$a_1=\sum_n u_nu_{n+1}$, $c=\sum_n u_nu_{n+1}(u_n+u_{n+1})$,
+$t=\sum_n u_nu_{n+1}u_{n+2}$.
+
+\begin{proposition}[Cluster closed forms; \textsc{verified} to $\sim10^{-54}$]
+\label{prop:sigma}
+Equations~\eqref{eq:sig2}--\eqref{eq:sig3} agree with the brute-force enumeration of
+non-consecutive $2$- and $3$-subsets for $(A,B,C)$ equal to $(1,0,1)$, $(1,1,1)$,
+$(2,1,3)$, $(1,2,1)$
+to better than $10^{-40}$ (residuals $\sim10^{-54}$--$10^{-55}$).
+\end{proposition}
+
+This is the gate of \texttt{verify\_clusters.py}: no derived combinatorial identity
+is trusted until machine-checked against brute force. With the gate passed, the
+downward recurrence~\eqref{eq:downward} seeded by
+$1+\sigma_1(M)+\sigma_2(M)+\sigma_3(M)$ gives the values in
+Table~\ref{tab:hp}.
+
+For the reference triple $(1,0,1)$ we certify $\delta$ \emph{three} independent ways
+at $M=10^6$ (working precision $170$ digits): seed-order independence (order-$2$ vs
+order-$3$ seed agree to $56$ digits; order-$3$ vs order-$3$-plus-leading-$\sigma_4$
+to $75$ digits), self-convergence ($M=10^5$ vs $10^6$ agree to $47$ digits), and a
+fully independent forward continuant with Neville extrapolation in $1/N$ (agrees to
+$\sim25$ digits, its own resolution ceiling). The conservative reliable count is
+$\ge44$ digits:
+\begin{equation}\label{eq:delta101}
+  \delta(1,0,1)=0.12385719436062639272850498970259084096757955\ldots
+\end{equation}
+
+\begin{table}[t]
+\centering
+\caption{Certified high-precision $\delta(A,B,C)=\log\Rinf$ via the exact
+order-$3$ cluster seed and downward recurrence~\eqref{eq:downward} at $M=10^5$
+(working precision $90$ digits), each value self-checked against $M=2.5\times10^4$
+and cross-checked by independent forward/Neville extrapolation. ``rel.\ dig.''\ is
+the conservatively certified number of correct digits.}\label{tab:hp}
+\begin{tabular}{lcr}
+\toprule
+$(A,B,C)$ & $\delta=\log\Rinf$ (first $30$ digits) & rel.\ dig.\\
+\midrule
+$(1,0,1)$ & $0.123857194360626392728504989702$ & $44^{\dagger}$\\
+$(1,0,2)$ & $0.077741108480647487187139168954$ & $39$\\
+$(1,0,3)$ & $0.055023822866781361284024549668$ & $39$\\
+$(2,0,1)$ & $0.044814419812755566106936562111$ & $40$\\
+$(3,0,1)$ & $0.023024249675539505266856933463$ & $41$\\
+$(1,1,1)$ & $0.064033816182909523022426151229$ & $39$\\
+$(1,2,1)$ & $0.039254537227423694454156302525$ & $39$\\
+$(2,1,3)$ & $0.017942479040119357169479600823$ & $40$\\
+$(3,2,5)$ & $0.006837331281558730523182815470$ & $41$\\
+\bottomrule
+\end{tabular}\\[2pt]
+{\footnotesize $^{\dagger}$ certified to $\ge44$ digits at $M=10^6$, dps$=170$; see
+\eqref{eq:delta101}.}
+\end{table}
+
+\paragraph{Two robustness notes.} The degenerate triple $(1,2,1)$ has coincident
+poles, so the simple-pole residue form~\eqref{eq:Sdigamma} is singular there; the
+seed's $\sigma_1(m)=S(m)$ must use the exact confluent polygamma
+form~\eqref{eq:Sconfluent} (a direct numerical tail sum loses precision at large
+$m$). With that substitution $(1,2,1)$ matches the others ($39$ digits), and its
+$S(2)$ reproduces~\eqref{eq:S121} exactly. Separately, the independent
+forward/Neville cross-check must start the scaled continuant at the index that
+includes the $u_2$ term, or it converges to a different limit; with the correct
+start it agrees with the cluster value to $\sim25$ digits across all tested triples.
+
+\paragraph{On the previously reported ``$80$-digit'' figure.}
+An earlier internal record cited an $80$-digit value for $\delta(1,0,1)$. The
+present method reaches $80$ digits in principle at $M=10^7$ (consistent with the
+$\sim12$ digit/decade rate), but we \emph{certify} only the $\ge44$ digits
+of~\eqref{eq:delta101} at feasible cost; nothing is asserted beyond the certified
+count.
+
+\section{No low-height closed form for $\delta$}\label{sec:null}
+
+\begin{proposition}[Non-elementarity; \textsc{conjectured}, rigorous null]
+\label{prop:null}
+No low-height integer relation is found for $V$, $\Rinf$, or $\delta$ against
+natural constant bases. Specifically: $\texttt{identify}(V)=\text{None}$ at $100$
+digits (the strongest null, $V$ being the natural ``answer'', known to $129$ digits
+via the fast $p_n/q_n$ ratio); $\texttt{identify}(\delta)=\text{None}$; PSLQ over
+$\{1,\pi,\log2,\gamma,\text{Catalan},\zeta(3)\}$ with $\max|c_i|\le200$ returns no
+relation; and $\Rinf$ is not algebraic of degree $\le4$ and height $\le10^4$.
+\end{proposition}
+
+Uncontrolled PSLQ does return high-height vectors, but \texttt{pslq\_stability.py}
+shows them to be artifacts: the recovered vector wanders with working precision
+($[30,110,\dots]\to[-244,\dots]\to[1330,\dots]\to[-25296,\dots]$) and the residual
+floors at $\sim10^{-\mathrm{dps}}$ rather than shrinking toward true zero --- whereas
+a genuine integer relation is precision-invariant. We therefore record $\delta$ as
+conjecturally a genuine new transcendental constant of the quadratic family, not
+reducible to the product constant $K_\Gamma$. Irrationality of $\delta$ is open. A
+null integer-relation result is, we stress, a complete and honest answer, not a gap.
+
+\section{The machine-checked finitary core}\label{sec:lean}
+
+The finitary facts underlying Sections~\ref{sec:frame}--\ref{sec:bracket} are
+formalized in Lean~4 with Mathlib (toolchain pinned: \texttt{lean4:v4.30.0},
+Mathlib \texttt{rev=v4.30.0}). Each declaration was checked with
+\texttt{\#print axioms}; every axiom cone is a subset of the Mathlib defaults
+$\{\texttt{propext},\texttt{Classical.choice},\texttt{Quot.sound}\}$ with \emph{no}
+\texttt{sorryAx}, the source contains no \texttt{sorry}/\texttt{admit}, and the
+build is warning- and error-free (exit $0$).
+
+\begin{theorem}[Formalized core; \textsc{proven}]\label{thm:lean}
+The following are machine-checked with clean axiom cones:
+\begin{itemize}
+\item \texttt{casoratian\_step}, \texttt{casoratian\_eq}, \texttt{pq\_casoratian}:
+the Casoratian of two solutions of $s_{n+2}=b_{n+2}s_{n+1}+s_n$ flips sign each
+step, hence equals $(-1)^n$ times its initial value; for the convergents
+($p_0{=}1,p_1{=}b_1{+}1,q_0{=}1,q_1{=}b_1$) this is
+$p_{n+1}q_n-p_nq_{n+1}=(-1)^n$ (over an arbitrary \texttt{CommRing}).
+\item \texttt{rseq\_ge\_one}, \texttt{rseq\_mono}, \texttt{rseq\_monotone},
+\texttt{rmaj\_ge\_one}, \texttt{rmaj\_mono}, \texttt{rseq\_le\_rmaj}: the scaled
+sequence $r_{n+2}=r_{n+1}+u_{n+2}r_n$ ($r_0{=}r_1{=}1$, $u\ge0$) satisfies
+$r_n\ge1$, is monotone, and is dominated by the partial products
+$\prod_{k=2}^n(1+u_k)$ (over $\R$).
+\item \texttt{rseq\_bddAbove\_of\_rmaj}, \texttt{rseq\_tendsto\_ciSup},
+\texttt{rseq\_tendsto\_of\_rmaj\_bddAbove}: monotone convergence --- if the partial
+products are bounded above (equivalently $\sum u_n<\infty$) then $R_n\to\sup_nR_n$,
+i.e.\ $\Rinf$ exists.
+\end{itemize}
+\end{theorem}
+
+This is the \emph{conditional-core} pattern: the finitary algebra and order
+structure are proved unconditionally, while the single analytic input --- that the
+partial products are bounded above --- is taken as an explicit labelled hypothesis
+(it is the convergence of $\sum u_n=O(\sum k^{-4})$, elementary but analytic). Out
+of scope for the formalization, and proved by hand/numerics above, are: the value of
+$\Rinf$ and the upper bracket $\Rinf\le1/(1-S)$, the closed forms for $S$, the
+product constant $K_\Gamma$ and the Stirling/Gamma asymptotics of~\eqref{eq:law},
+and the non-elementarity conjecture.
+
+\section{Epistemic status}\label{sec:status}
+
+\begin{itemize}
+\item \textbf{PROVEN} (Lean, clean cones; Theorem~\ref{thm:lean}): the Casoratian
+identity and the existence of $\Rinf=\lim R_n$ via monotone--bounded convergence.
+\item \textbf{STRUCTURAL} (complete elementary hand proof; not yet formalized): the
+scaled recurrence and tail estimate (Lemma~\ref{lem:scaled}), the
+independence-polynomial identity (Proposition~\ref{prop:indpoly}), the bracket
+(Proposition~\ref{prop:bracket}), and the closed forms for $S$ and
+$\sigma_2,\sigma_3$ (Propositions~\ref{prop:S},~\ref{prop:sigma}).
+\item \textbf{VERIFIED} (numerically): the cluster identity exactly
+(\texttt{continuant\_verify.py}); $\sigma_2,\sigma_3$ to $\sim10^{-54}$
+(\texttt{verify\_clusters.py}); $S$ closed forms to $35$--$62$ digits vs direct
+summation; the bracket on all tabulated triples; and the $\delta$ values of
+Table~\ref{tab:hp}, certified $\ge39$ digits each and $\ge44$ for $(1,0,1)$, with an
+independent cross-check.
+\item \textbf{CONJECTURED}: $\delta$ has no low-height elementary closed form
+(Proposition~\ref{prop:null}); $\delta$ is a new transcendental constant of the
+family. Irrationality of $\delta$ is open.
+\end{itemize}
+
+\section{Code and data availability}\label{sec:code}
+
+Every numerical claim is reproduced by the following scripts (mpmath): the harness
+\texttt{harness\_rinf.py} (two-solution frame, $\Rinf$, value $V$);
+\texttt{continuant\_verify.py} (exact independence-polynomial check);
+\texttt{S\_closed\_form.py}, \texttt{S\_confluent.py} (closed forms for $S$);
+\texttt{verify\_clusters.py} (the $\sigma_2,\sigma_3$ gate, Proposition~\ref{prop:sigma});
+\texttt{hp\_delta\_v2.py} and \texttt{finalize\_m2.py} (the high-precision $\delta$
+values and Table~\ref{tab:hp}, output \texttt{delta\_values\_m2.txt});
+\texttt{verify\_forward\_crosscheck.py} (the independent cross-check);
+\texttt{hp\_probe.py}, \texttt{pslq\_stability.py} (the integer-relation nulls,
+Proposition~\ref{prop:null}); and the Lean package \texttt{lean/pcf\_continuant}
+(\texttt{Basic.lean}, \texttt{Check.lean}; Theorem~\ref{thm:lean}). Public
+repository and Zenodo deposit are forthcoming (operator-gated); the deposited unit
+will supplement the companion growth-law note~\cite{growth}.
+
+\begin{thebibliography}{9}
+
+\bibitem{growth}
+Papanokechi,
+\emph{An exact growth constant for the quadratic polynomial continued fraction
+(structural proof; numerically verified)}, 2026.
+Establishes the growth law~\eqref{eq:law} and leaves $\delta=\log R_\infty$ without
+a closed form. Zenodo concept DOI \texttt{10.5281/zenodo.20564681}
+(\url{https://doi.org/10.5281/zenodo.20564681}).
+
+\bibitem{ladder}
+Papanokechi,
+\emph{Polynomial Continued Fractions: a Proved Logarithmic Ladder, a $4/\pi$
+Casoratian Identity, and 482 Irrational Constants}, 2026.
+Denominator-growth lemma \textsf{lem:Qgrowth} and the standard continuant $Q_n$.
+Zenodo concept DOI \texttt{10.5281/zenodo.19491767}
+(\url{https://doi.org/10.5281/zenodo.19491767}).
+
+\bibitem{dlmf}
+F.~W.~J.~Olver et al.\ (eds.),
+\emph{NIST Digital Library of Mathematical Functions},
+\url{https://dlmf.nist.gov/}, \S5.15 (\emph{Polygamma functions}) and \S5.7
+(series); cited at section level.
+
+\bibitem{mpmath}
+F.~Johansson et al.,
+\emph{mpmath: a Python library for arbitrary-precision floating-point arithmetic},
+version 1.3.0, \url{https://mpmath.org/}. Provides \texttt{nsum}, \texttt{digamma},
+\texttt{polygamma}, \texttt{identify}, and \texttt{pslq} as used above.
+
+\end{thebibliography}
+
+\paragraph{AI-assistance disclosure.}
+Prepared with AI assistance (GitHub Copilot; Anthropic Claude) for drafting,
+computer-algebra verification, and manuscript preparation. All numerical values were
+obtained by running the scripts named in Section~\ref{sec:code}; the Lean cones were
+obtained by \texttt{\#print axioms}. The author takes responsibility for the content
+and for the placement of each claim within the four-grade epistemic partition.
+
+\end{document}

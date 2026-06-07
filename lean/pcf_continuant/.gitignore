@@ -1,0 +1,6 @@
+/.lake
+# regenerable Lean build artifacts (kept out of version control)
+/build
+*.olean
+*.ilean
+*.trace
