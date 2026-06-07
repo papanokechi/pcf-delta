@@ -27,6 +27,7 @@ github: "https://github.com/papanokechi/pcf-delta"
 # NOTE: the concept (cite-all) DOI is 20578400 — NOT the companion note 20564681.
 zenodo:
   concept_doi: "10.5281/zenodo.20578400"     # cite-all; stable across versions
+  v1_1_version_doi: "10.5281/zenodo.20585194"  # current release (v1.1, 2026-06-07)
   v1_0_version_doi: "10.5281/zenodo.20578401"  # frozen v1.0 (8 pp); archive/
 related_identifiers:
   - identifier: "10.5281/zenodo.20564681"   # companion growth-law note (concept)
