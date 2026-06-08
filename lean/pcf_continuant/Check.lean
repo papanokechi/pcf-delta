@@ -2,6 +2,8 @@ import PcfContinuant.Basic
 import PcfContinuant.Bracket
 import PcfContinuant.Indep
 import PcfContinuant.Sigma
+import PcfContinuant.Topic3
+import PcfContinuant.Topic5
 
 open PcfContinuant
 
@@ -37,3 +39,57 @@ open PcfContinuant
 -- Finite-window cluster closed form σ₂ (Sigma.lean): σ₂ = e₂ − a₁.
 -- STRUCTURAL → PROVEN.
 #print axioms sigma2win_eq
+
+-- Topic 2 (Indep.lean): general weighted independence-polynomial engine —
+-- arbitrary-window deletion-contraction and its degree-graded (σ_k) refinement.
+-- PROVEN (clean axiom cone, finitary).
+#print axioms indepPolyWin
+#print axioms indepKWin
+#print axioms indepKWin_zero
+#print axioms indepKWin_one
+#print axioms filter_not_mem_top_win
+#print axioms filter_not_mem_top_win_card
+#print axioms sum_filter_mem_top_win
+#print axioms sum_filter_mem_top_win_card
+#print axioms indepPolyWin_succ_succ
+#print axioms indepKWin_succ_succ
+#print axioms indepPolyWin_eq_sum_indepKWin
+#print axioms indepPoly_eq_indepPolyWin
+
+-- Two-sided cluster-partial-sum enclosure of R_inf (Topic3.lean), PROVEN
+-- conditional on the two labelled analytic hypotheses (H1) HasSum and
+-- (H2) 0 ≤ σ_k ≤ S^k.
+#print axioms PcfContinuant.Topic3.tsum_geomTail
+#print axioms PcfContinuant.Topic3.Rinf_enclosure
+#print axioms PcfContinuant.Topic3.delta_enclosure
+#print axioms PcfContinuant.Topic3.enclosure_nonvacuous
+
+-- Topic 3 referee items: m=1 provably reproduces the paper's S-only bracket,
+-- and (H2) at k=0 forces σ₀ ≤ 1.  PROVEN.
+#print axioms PcfContinuant.Topic3.clusterPartial_one_eq
+#print axioms PcfContinuant.Topic3.m1_recovers_S_bracket
+#print axioms PcfContinuant.Topic3.m1_delta_eq_S_bracket
+#print axioms PcfContinuant.Topic3.H2_zero_forces_sigma0_le_one
+
+-- Topic 4 (Basic.lean): general Casoratian for `s(n+2)=c(n+2)s(n+1)+d n·s n`
+-- over any CommRing.  The classical (-1)^n results are the d≡1 specialization.
+-- PROVEN.
+#print axioms IsSol.isSolG
+#print axioms casoratian_stepG
+#print axioms casoratian_eqG
+#print axioms pq_casoratianG
+#print axioms casoratian_eqG_recovers_classical
+
+-- Topic 1 (Indep.lean): σ₃ cluster sum promoted to PROVEN via the graded engine
+-- (σ₃ = indepKWin u 3; recurrence is the k=2 instance of indepKWin_succ_succ).
+#print axioms sigma3Win_eq
+#print axioms sigma3Win_succ_succ
+
+-- Topic 5 (Topic5.lean): exact weighted partial-fraction telescoping for the B=0
+-- family.  Finite identity PROVEN over any field; the ℝ limit is conditional on the
+-- labelled hypothesis 1/b_N → 0.
+#print axioms PcfContinuant.Topic5.partialFraction
+#print axioms PcfContinuant.Topic5.sum_Ico_telescope
+#print axioms PcfContinuant.Topic5.weighted_telescope
+#print axioms PcfContinuant.Topic5.weighted_telescope_value
+#print axioms PcfContinuant.Topic5.weighted_sum_tendsto
