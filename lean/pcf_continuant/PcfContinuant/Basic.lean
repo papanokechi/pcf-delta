@@ -48,6 +48,11 @@ variable {R : Type*} [CommRing R]
 /-- A second-order linear recurrence `s (n+2) = c (n+2) * s (n+1) + s n`. -/
 def IsSol (c s : ℕ → R) : Prop := ∀ n, s (n + 2) = c (n + 2) * s (n + 1) + s n
 
+/-- The **general** second-order linear recurrence
+`s (n+2) = c (n+2) * s (n+1) + d n * s n`, with an arbitrary lower coefficient `d`.
+The classical `IsSol` is the special case `d ≡ 1` (see `IsSol.isSolG`). -/
+def IsSolG (c d s : ℕ → R) : Prop := ∀ n, s (n + 2) = c (n + 2) * s (n + 1) + d n * s n
+
 /-- The Casoratian (discrete Wronskian) of two sequences. -/
 def casoratian (y z : ℕ → R) (n : ℕ) : R := y (n + 1) * z n - y n * z (n + 1)
 
@@ -80,6 +85,60 @@ theorem pq_casoratian {b p q : ℕ → R}
     simp only [casoratian, hp0, hp1, hq0, hq1]; ring
   rw [h0, mul_one] at h
   simpa [casoratian] using h
+
+/-! ### General Casoratian over an arbitrary lower coefficient `d`
+
+For the general recurrence `s (n+2) = c (n+2) · s (n+1) + d n · s n`, the Casoratian
+no longer merely flips sign — it is scaled by `-(d n)` at each step, hence equals
+`(∏_{k<n} -(d k))` times its initial value.  The classical sign-flip results above
+are the `d ≡ 1` specialization (`IsSol.isSolG`, `Finset.prod_const`).  The identity is
+independent of the upper coefficient `c`. -/
+
+/-- The classical recurrence is the `d ≡ 1` case of the general one. -/
+theorem IsSol.isSolG {c s : ℕ → R} (h : IsSol c s) : IsSolG c (fun _ => 1) s := by
+  intro n; simpa using h n
+
+/-- **General Casoratian step.** For two solutions of the same general recurrence,
+the Casoratian is scaled by `-(d n)` at each step. -/
+theorem casoratian_stepG {c d y z : ℕ → R} (hy : IsSolG c d y) (hz : IsSolG c d z)
+    (n : ℕ) : casoratian y z (n + 1) = -(d n) * casoratian y z n := by
+  have hyn : y (n + 1 + 1) = c (n + 1 + 1) * y (n + 1) + d n * y n := hy n
+  have hzn : z (n + 1 + 1) = c (n + 1 + 1) * z (n + 1) + d n * z n := hz n
+  simp only [casoratian, hyn, hzn]
+  ring
+
+/-- **General Casoratian closed form.** Hence the Casoratian equals
+`(∏_{k<n} -(d k))` times its value at `0`. -/
+theorem casoratian_eqG {c d y z : ℕ → R} (hy : IsSolG c d y) (hz : IsSolG c d z)
+    (n : ℕ) :
+    casoratian y z n = (∏ k ∈ Finset.range n, -(d k)) * casoratian y z 0 := by
+  induction n with
+  | zero => simp
+  | succ k ih =>
+      rw [casoratian_stepG hy hz k, ih, Finset.prod_range_succ]
+      ring
+
+/-- **General convergent Casoratian.** For two solutions `p`, `q` of the same general
+recurrence, `p (n+1) q n - p n q (n+1) = (∏_{k<n} -(d k)) · (p 1 q 0 - p 0 q 1)`.
+The classical `pq_casoratian` is the `d ≡ 1`, normalized-initial-data specialization. -/
+theorem pq_casoratianG {c d p q : ℕ → R} (hp : IsSolG c d p) (hq : IsSolG c d q)
+    (n : ℕ) :
+    p (n + 1) * q n - p n * q (n + 1)
+      = (∏ k ∈ Finset.range n, -(d k)) * (p 1 * q 0 - p 0 * q 1) := by
+  have h := casoratian_eqG hp hq n
+  have h0 : casoratian p q 0 = p 1 * q 0 - p 0 * q 1 := by simp [casoratian]
+  rw [h0] at h
+  simpa [casoratian] using h
+
+/-- **Faithfulness of the generalization.**  Instantiating the general closed form
+`casoratian_eqG` at `d ≡ 1` (via `IsSol.isSolG`) recovers the classical `(-1)^n`
+sign-flip law `casoratian_eq` verbatim: `∏_{k<n} -(1) = (-1)^n`.  This is the cheapest
+possible witness that the general lemma genuinely specializes to the original. -/
+theorem casoratian_eqG_recovers_classical {c y z : ℕ → R}
+    (hy : IsSol c y) (hz : IsSol c z) (n : ℕ) :
+    casoratian y z n = (-1) ^ n * casoratian y z 0 := by
+  have h := casoratian_eqG hy.isSolG hz.isSolG n
+  simpa [Finset.prod_const, Finset.card_range] using h
 
 /-! ## The convergence core: the scaled sequence is `≥ 1` and monotone
 
