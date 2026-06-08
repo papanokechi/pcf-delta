@@ -6,7 +6,7 @@ abstract: >-
   A characterization of the additive correction constant delta = log R_inf > 0
   that the companion growth-law note introduces and leaves undetermined for the
   quadratic polynomial continued fraction V(A,B,C) = 1 + K_{n>=1} 1/(A n^2 + B n + C),
-  integers A,B,C >= 1. With b_k = A k^2 + B k + C, continuant
+  integers A,C >= 1, B >= 0. With b_k = A k^2 + B k + C, continuant
   q_0 = 1, q_1 = b_1, q_n = b_n q_{n-1} + q_{n-2}, scaled partial quotients
   u_n = 1/(b_{n-1} b_n) and S = sum_{n>=2} u_n, the scaled limit is
   R_inf = lim q_n / prod_{k<=n} b_k and delta = log R_inf. Contributions:
@@ -25,15 +25,17 @@ abstract: >-
   finitary core in Lean 4 / Mathlib (toolchain pinned lean4 v4.30.0, Mathlib v4.30.0):
   the Casoratian identity and the existence of R_inf = lim R_n by monotone-bounded
   convergence, with clean axiom cones. Epistemic grades (SIARC four-class): PROVEN
-  (Lean core), STRUCTURAL (recurrence, bracket, closed forms), VERIFIED (cluster
-  identities and tabulated delta values, mpmath), CONJECTURED (delta has no low-height
-  elementary closed form; irrationality of delta is open).
+  (Lean core: Casoratian identity, existence of R_inf, the independence-polynomial
+  identity, and the sigma_2 cluster core), STRUCTURAL (recurrence, bracket, S and
+  sigma_3 closed forms), VERIFIED (cluster identities and tabulated delta values,
+  mpmath), CONJECTURED (delta has no low-height elementary closed form; irrationality
+  of delta is open).
 authors:
   # ORCID source-verified from the ORCID registry page.
   - family-names: "Papanokechi"
     orcid: "https://orcid.org/0009-0000-6192-8273"
-version: "1.1"
-date-released: "2026-06-07"
+version: "1.2"
+date-released: "2026-06-08"
 license: CC-BY-4.0
 repository-code: "https://github.com/papanokechi/pcf-delta"
 doi: "10.5281/zenodo.20578400"
@@ -43,9 +45,11 @@ identifiers:
   - type: doi
     value: "10.5281/zenodo.20578400"
     description: "Concept DOI (all versions; cite-all)"
+  # v1.2 version DOI: CONFIRM-PENDING — minted by the operator at the "New version"
+  # publish under the concept DOI; add the resolved entry here after the mint.
   - type: doi
     value: "10.5281/zenodo.20585194"
-    description: "Version DOI (v1.1 deposit; this release, 2026-06-07)"
+    description: "Version DOI (v1.1 deposit, 2026-06-07; superseded by v1.2)"
   - type: doi
     value: "10.5281/zenodo.20578401"
     description: "Version DOI (v1.0 deposit, 2026-06-07; superseded, frozen in archive/)"
@@ -81,7 +85,12 @@ references:
     notes: "Context reference."
     year: 2026
 # DEPOSITED on Zenodo: v1.0 on 2026-06-07 (version DOI 10.5281/zenodo.20578401);
-# v1.1 on 2026-06-07 (version DOI 10.5281/zenodo.20585194), the current release.
+# v1.1 on 2026-06-07 (version DOI 10.5281/zenodo.20585194). v1.2 (2026-06-08) is
+# the current draft; its version DOI is CONFIRM-PENDING (mint under the concept DOI,
+# then record it above and in METADATA.yml / .zenodo.json). v1.2 promotes the
+# independence-polynomial identity and the sigma_2 cluster core to PROVEN in Lean
+# (Check.lean: 26 clean axiom cones) and corrects the standing assumption to
+# A,C >= 1, B >= 0 per peer review.
 # Concept (cite-all) DOI 10.5281/zenodo.20578400. GitHub repo
 # https://github.com/papanokechi/pcf-delta; no GitHub release, no webhook.
 # isSupplementTo target 10.5281/zenodo.20564681 confirmed before publish.
