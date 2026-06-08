@@ -3,6 +3,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{booktabs}
 \usepackage{hyperref}
+\usepackage{microtype}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}{Proposition}
@@ -23,7 +24,7 @@ continued fraction: structure, a closed-form bracket,\\
 and certified high-precision values}
 \author{Papanokechi\\
 \small ORCID: \href{https://orcid.org/0009-0000-6192-8273}{0009-0000-6192-8273}}
-\date{June 2026 \quad(\texttt{pcf-delta} v1.1 draft)}
+\date{June 2026 \quad(\texttt{pcf-delta} v1.2 draft)}
 
 \begin{document}
 \maketitle
@@ -53,8 +54,10 @@ by a fully independent forward/Neville extrapolation. An integer-relation
 precision-stability test shows the uncontrolled relations to be numerical
 artifacts; we record $\delta$ as conjecturally a new transcendental constant of the
 family. Finally, the finitary structural core --- the Casoratian identity, the
-monotone--bounded convergence $R_n\to\Rinf$, and the closed-form bracket
-$1+S\le\Rinf\le1/(1-S)$ --- is machine-checked in Lean~4/Mathlib
+monotone--bounded convergence $R_n\to\Rinf$, the closed-form bracket
+$1+S\le\Rinf\le1/(1-S)$, the independence-polynomial identity
+$R_n=\sum_T\prod_{i\in T}u_i$, and the finite-window cluster core
+$\sigma_2=e_2-a_1$ --- is machine-checked in Lean~4/Mathlib
 with clean axiom cones (no \texttt{sorry}).
 \end{abstract}
 
@@ -205,8 +208,8 @@ recurrence $K_n=x_nK_{n-1}+K_{n-2}$: the weight $u_n$ multiplies the
 \emph{second-order} term. It is instead the transfer recurrence of an independence
 polynomial.
 
-\begin{proposition}[Independence-polynomial identity; \textsc{verified} exactly,
-\textsc{structural}]\label{prop:indpoly}
+\begin{proposition}[Independence-polynomial identity; \textsc{proven}
+(Lean, Theorem~\ref{thm:lean})]\label{prop:indpoly}
 For every $n$,
 \[
   R_n=\sum_{\substack{T\subseteq\{2,\dots,n\}\\ \text{no two consecutive}}}
@@ -354,7 +357,8 @@ Proposition~\ref{prop:S}, exact via $\psi$), and adjacency sums
 $a_1=\sum_n u_nu_{n+1}$, $c=\sum_n u_nu_{n+1}(u_n+u_{n+1})$,
 $t=\sum_n u_nu_{n+1}u_{n+2}$.
 
-\begin{proposition}[Cluster closed forms; \textsc{structural}
+\begin{proposition}[Cluster closed forms; $\sigma_2$ core \textsc{proven}
+(Lean, Theorem~\ref{thm:lean}), $\sigma_3$ \textsc{structural}
 (Appendix~\ref{app:clusters}), \textsc{verified} to $\sim10^{-54}$]
 \label{prop:sigma}
 Equations~\eqref{eq:sig2}--\eqref{eq:sig3} hold: the unrestricted elementary
@@ -460,7 +464,7 @@ build is warning- and error-free (exit $0$).
 
 \begin{theorem}[Formalized core; \textsc{proven}]\label{thm:lean}
 The following are machine-checked with clean axiom cones:
-\begin{itemize}
+\begin{itemize}\sloppy
 \item \texttt{casoratian\_step}, \texttt{casoratian\_eq}, \texttt{pq\_casoratian}:
 the Casoratian of two solutions of $s_{n+2}=b_{n+2}s_{n+1}+s_n$ flips sign each
 step, hence equals $(-1)^n$ times its initial value; for the convergents
@@ -540,6 +544,7 @@ family. Irrationality of $\delta$ is open.
 
 \section{Code and data availability}\label{sec:code}
 
+\begin{sloppypar}
 Every numerical claim is reproduced by the following scripts (mpmath): the harness
 \texttt{harness\_rinf.py} (two-solution frame, $\Rinf$, value $V$);
 \texttt{continuant\_verify.py} (exact independence-polynomial check);
@@ -563,6 +568,7 @@ finite-window $\sigma_2$ inclusion--exclusion core (\texttt{sigma2win\_eq}),
 Theorem~\ref{thm:lean}). The Lean sources and the verification scripts named above
 accompany the deposit in its public repository,
 \url{https://github.com/papanokechi/pcf-delta}.
+\end{sloppypar}
 
 \appendix
 \section{Inclusion--exclusion derivation of the cluster closed forms}
