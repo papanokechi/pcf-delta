@@ -74,11 +74,20 @@ if ($missing.Count) {
     throw "Missing canonical files (will NOT ship an incomplete deposit): $($missing -join ', ')"
 }
 
-# --- copy tree dirs, then prune scaffolding ---
+# --- copy tree dirs, EXCLUDING scaffolding at copy time (robocopy /XD /XF) so the
+#     regenerable bulk -- e.g. lean/.lake holds 120k+ Mathlib oleans -- is never
+#     materialized into deposit/ in the first place. The prune loops below remain as
+#     a fast belt-and-suspenders pass over the (now small) copied tree. ---
 foreach ($d in $treeDirs) {
     $src = Join-Path $repo $d
     if (-not (Test-Path $src)) { throw "Missing tree dir: $d" }
-    Copy-Item $src (Join-Path $deposit $d) -Recurse -Force
+    $dst = Join-Path $deposit $d
+    New-Item -ItemType Directory -Force -Path $dst | Out-Null
+    & robocopy $src $dst /E /XD @pruneDirs /XF @pruneGlobs `
+        /NFL /NDL /NJH /NJS /NC /NS /NP | Out-Null
+    # robocopy success is exit code 0-7; 8+ is a genuine failure.
+    if ($LASTEXITCODE -ge 8) { throw "robocopy failed copying $d (exit $LASTEXITCODE)" }
+    $global:LASTEXITCODE = 0
 }
 foreach ($pd in $pruneDirs) {
     Get-ChildItem $deposit -Recurse -Force -Directory -ErrorAction SilentlyContinue |
@@ -175,8 +184,8 @@ Write-Host "  * Upload deposit/$top.zip  (or the individual files in deposit/SHA
 Write-Host "    Do NOT upload deposit/.gitkeep - it is a git placeholder, not deposit content."
 Write-Host "  * On Zenodo, open concept 10.5281/zenodo.20578400 -> 'New version',"
 Write-Host "    upload deposit/ contents, confirm METADATA.yml fields, then Publish."
-Write-Host "  * The v1.1 version DOI is minted by that Publish action."
-Write-Host "  * After publish: record the v1.1 version DOI in CITATION.cff, .zenodo.json,"
+Write-Host "  * The v$ver version DOI is minted by that Publish action."
+Write-Host "  * After publish: record the v$ver version DOI in CITATION.cff, .zenodo.json,"
 Write-Host "    METADATA.yml, INDEX.md; commit; then 'SIARC_OPERATOR=1 git push' and"
-Write-Host "    push the v1.1 tag."
+Write-Host "    push the v$ver tag."
 exit 0
