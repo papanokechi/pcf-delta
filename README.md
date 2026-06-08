@@ -39,8 +39,15 @@ pcf-delta/
   candidate is assembled into `deposit/` as `delta_characterization_vX.Y.pdf`, whose
   filename version must equal `METADATA.version` and the PDF title-page version.
 
-The current live version is **v1.1** (adds the machine-checked closed-form bracket
-`rinf_bracket` and an inclusion–exclusion appendix for σ₂,σ₃ over the deposited v1.0).
+The current live version is **v1.3** (enlarges the machine-checked core to 58 clean
+axiom cones: a general Casoratian over any commutative ring with the classical
+(&minus;1)<sup>n</sup> case recovered as a faithfulness witness; a degree-graded
+independence refinement with the order-3 cluster window object — the σ₃ closed form
+stays structural, not promoted; an *m*-term geometric-tail enclosure refining the
+bracket; and an exact weighted partial-fraction telescoping identity for the *B=0*
+family. v1.2 promoted the independence-polynomial identity and the σ₂ cluster core
+to PROVEN; v1.1 added the closed-form bracket `rinf_bracket` and the σ₂,σ₃
+inclusion–exclusion appendix over the deposited v1.0).
 
 ## Epistemic convention (SIARC four-class)
 
