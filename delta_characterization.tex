@@ -30,7 +30,7 @@ and certified high-precision values}
 \maketitle
 
 \begin{abstract}
-For integers $A,B,C\ge1$ let $b_k=Ak^2+Bk+C$ and let $q_n$ be the standard
+For integers $A,C\ge1$ and $B\ge0$ let $b_k=Ak^2+Bk+C$ and let $q_n$ be the standard
 continuant denominators of the polynomial continued fraction
 $V(A,B,C)=1+\mathbf{K}_{n\ge1}\,1/(An^2+Bn+C)$ ($q_0=1$, $q_1=b_1$,
 $q_n=b_nq_{n-1}+q_{n-2}$). A companion note proves the growth law
@@ -69,7 +69,7 @@ computation, integer-relation detection.
 \section{Introduction}
 
 The convergent denominators of the quadratic polynomial continued fraction
-$V(A,B,C)=1+\mathbf{K}_{n\ge1}\,1/(An^2+Bn+C)$, integers $A,B,C\ge1$, obey
+$V(A,B,C)=1+\mathbf{K}_{n\ge1}\,1/(An^2+Bn+C)$, integers $A,C\ge1$, $B\ge0$, obey
 $q_0=1$, $q_1=b_1$, $q_n=b_nq_{n-1}+q_{n-2}$ with $b_k=Ak^2+Bk+C$. A companion
 note~\cite{growth} establishes the exact two-sided growth law
 \begin{equation}\label{eq:law}
@@ -135,10 +135,11 @@ amplitude nor the digamma closed form for its bracketing series $S$ appears in t
 literature.
 
 \paragraph{Standing assumptions.}
-Throughout $A,B,C$ are integers $\ge1$, so $b_k=Ak^2+Bk+C\ge A+B+C\ge3>0$ for all
-$k\ge1$, $q_n>0$, and $P_n:=\prod_{k=1}^nb_k>0$. The roots satisfy
-$r_1+r_2=-B/A<0$, $r_1r_2=C/A>0$, hence either form a complex-conjugate pair or are
-two negative reals; in all cases $\operatorname{Re}r_i<0$.
+Throughout $A,C$ are integers $\ge1$ and $B$ is an integer $\ge0$, so
+$b_k=Ak^2+Bk+C\ge Ak^2+C\ge A+C\ge2>0$ for all $k\ge1$, $q_n>0$, and
+$P_n:=\prod_{k=1}^nb_k>0$. The roots of $Ax^2+Bx+C$ satisfy $r_1+r_2=-B/A\le0$ and
+$r_1r_2=C/A>0$, hence form either a complex-conjugate pair (purely imaginary exactly
+when $B=0$) or two negative reals; in all cases $\operatorname{Re}r_i\le0$.
 
 \paragraph{Epistemic convention.}
 We use the four-class SIARC partition. \textbf{PROVEN} = machine-checked in Lean
@@ -174,8 +175,10 @@ monotonicity gives $R_{n-2}\le R_{n-1}$, whence $R_n\le R_{n-1}(1+u_n)$ and
 $R_n\le\prod_{k=2}^n(1+u_k)$. As $b_{k-1}b_k\ge A^2(k-1)^2k^2$, the series
 $\sum_k u_k=O(\sum k^{-4})$ converges, so the product converges and $(R_n)$ is
 bounded; a monotone bounded sequence converges to $\Rinf\ge R_2=1+u_2>1$. The tail
-estimate $\Rinf-R_n=\sum_{m>n}u_mR_{m-2}\le\Rinf\sum_{m>n}u_m=O(1/n^3)$ follows by
-comparison with $\int_n^\infty t^{-4}\,dt$.
+estimate $\Rinf-R_n=\sum_{m>n}(R_m-R_{m-1})=\sum_{m>n}u_mR_{m-2}\le\Rinf\sum_{m>n}u_m
+=O(1/n^3)$, where the first equality telescopes the increment
+$R_m-R_{m-1}=u_mR_{m-2}$, follows by comparison with $\int_n^\infty t^{-4}\,dt$ since
+$u_m\sim(Am^2)^{-2}$.
 \end{proof}
 
 \begin{lemma}[Casoratian; \textsc{proven}, Section~\ref{sec:lean}]\label{lem:caso}
@@ -197,7 +200,10 @@ The Wronskian decays like $P_n^{-2}\asymp(n!)^{-4}$, which is why the
 \emph{value} $V=\lim p_n/q_n$ converges super-geometrically (matched to
 $77$--$117$ digits across the test triples already at $N\approx4000$, and to the
 $129$ digits used in Section~\ref{sec:null} at larger $N$) while $\Rinf-R_n$ decays
-only like $1/n^3$. The slow convergence of $R_n$ is what forces the dedicated high-precision
+only like $1/n^3$. Consistently, the $\kappa/n+O(1/n^2)$ remainder in~\eqref{eq:law}
+is the Euler--Maclaurin tail of $\log P_n=\sum_{k\le n}\log b_k$, whereas
+$\log(q_n/P_n)=\delta+O(1/n^3)$ contributes only to the constant $K_\Gamma+\delta$
+and a strictly smaller remainder absorbed into $O(1/n^2)$. The slow convergence of $R_n$ is what forces the dedicated high-precision
 method of Section~\ref{sec:hp}; a naive forward recurrence stalls at $\sim25$--$38$
 digits.
 
@@ -257,8 +263,10 @@ With $S=\sum_{n\ge2}u_n<1$,
 \begin{proof}
 From $\Rinf=1+\sum_{n\ge2}u_nR_{n-2}$ and $R_{n-2}\ge1$ comes the lower bound
 $\Rinf\ge1+S$. For the upper bound, by~\eqref{eq:cluster} and $\sigma_k\le S^k$,
-$\Rinf=\sum_k\sigma_k\le\sum_k S^k=1/(1-S)$ (using $S<1$, which holds since
-numerically $S\le S(1,0,1)\approx0.1307$). Apply $\log$.
+$\Rinf=\sum_k\sigma_k\le\sum_k S^k=1/(1-S)$ (using $S<1$: each $b_k=Ak^2+Bk+C$ is
+increasing in each of $A,B,C$ for $k\ge1$, so $u_n=1/(b_{n-1}b_n)$ and hence
+$S=\sum_{n\ge2}u_n$ are maximized at the minimal admissible triple $(1,0,1)$, giving
+$S\le S(1,0,1)\approx0.1307<1$). Apply $\log$.
 \end{proof}
 
 \noindent The bracket is deliberately coarse: the lower bound keeps only
@@ -311,9 +319,10 @@ for $(A,B,C)=(1,2,1)$, $b_n=(n+1)^2$ has poles $\{-1,-1,0,0\}$ and
 \begin{equation}\label{eq:S121}
   S(1,2,1)=\frac{\pi^2}{3}-\frac{13}{4}=0.0398681336964528729\ldots,
 \end{equation}
-matched to $10^{-40}$. (Under the standing assumptions $A,B,C\ge1$ every
-$b_k=Ak^2+Bk+C\ge3>0$, so no summation index is a pole and the residue and
-confluent forms apply throughout.) Table~\ref{tab:bracket} shows the bracket on
+matched to $10^{-40}$. (Under the standing assumptions the poles of
+$1/(b_{n-1}b_n)$, namely $r_1,r_2,1+r_1,1+r_2$, each have real part $\le1<2$ because
+$\operatorname{Re}r_i\le0$; hence no summation index $n\ge2$ is a pole and the
+residue and confluent forms apply throughout.) Table~\ref{tab:bracket} shows the bracket on
 representative triples.
 
 \begin{table}[t]
@@ -366,7 +375,7 @@ symmetric sums $e_2=\tfrac12(p_1^2-p_2)$, $e_3=\tfrac16(p_1^3-3p_1p_2+2p_3)$
 corrected for adjacency by inclusion--exclusion (Appendix~\ref{app:clusters}). They
 agree with the brute-force enumeration of non-consecutive $2$- and $3$-subsets for
 $(A,B,C)$ equal to $(1,0,1)$, $(1,1,1)$, $(2,1,3)$, $(1,2,1)$
-to better than $10^{-40}$ (residuals $\sim10^{-54}$--$10^{-55}$).
+to better than $10^{-40}$ (absolute residuals $\sim10^{-54}$--$10^{-55}$).
 \end{proposition}
 
 This is the gate of \texttt{verify\_clusters.py}: no derived combinatorial identity
@@ -439,8 +448,8 @@ digits (the strongest null, $V$ being the natural ``answer'', known to $129$ dig
 via the fast $p_n/q_n$ ratio); $\texttt{identify}(\delta)=\text{None}$; PSLQ over
 $\{1,\pi,\log2,\gamma,\text{Catalan},\zeta(3)\}$ with $\max|c_i|\le200$ returns no
 relation; and $\Rinf$ --- the natural algebraic candidate, tested by PSLQ on
-$\{1,\Rinf,\Rinf^2,\Rinf^3,\Rinf^4\}$ --- is not algebraic of degree $\le4$ and
-height $\le10^4$ ($\delta$ and $V$ receive the \texttt{identify} null above).
+$\{1,\Rinf,\Rinf^2,\Rinf^3,\Rinf^4\}$ --- yields no integer relation of degree
+$\le4$ and height $\le10^4$ ($\delta$ and $V$ receive the \texttt{identify} null above).
 \end{proposition}
 
 Uncontrolled PSLQ does return high-height vectors, but \texttt{pslq\_stability.py}
