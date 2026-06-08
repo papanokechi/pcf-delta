@@ -45,8 +45,9 @@ identifiers:
   - type: doi
     value: "10.5281/zenodo.20578400"
     description: "Concept DOI (all versions; cite-all)"
-  # v1.2 version DOI: CONFIRM-PENDING — minted by the operator at the "New version"
-  # publish under the concept DOI; add the resolved entry here after the mint.
+  - type: doi
+    value: "10.5281/zenodo.20587230"
+    description: "Version DOI (v1.2 deposit; this release, 2026-06-08)"
   - type: doi
     value: "10.5281/zenodo.20585194"
     description: "Version DOI (v1.1 deposit, 2026-06-07; superseded by v1.2)"
@@ -85,13 +86,13 @@ references:
     notes: "Context reference."
     year: 2026
 # DEPOSITED on Zenodo: v1.0 on 2026-06-07 (version DOI 10.5281/zenodo.20578401);
-# v1.1 on 2026-06-07 (version DOI 10.5281/zenodo.20585194). v1.2 (2026-06-08) is
-# the current draft; its version DOI is CONFIRM-PENDING (mint under the concept DOI,
-# then record it above and in METADATA.yml / .zenodo.json). v1.2 promotes the
+# v1.1 on 2026-06-07 (version DOI 10.5281/zenodo.20585194); v1.2 on 2026-06-08
+# (version DOI 10.5281/zenodo.20587230), the current release. v1.2 promotes the
 # independence-polynomial identity and the sigma_2 cluster core to PROVEN in Lean
 # (Check.lean: 26 clean axiom cones) and corrects the standing assumption to
 # A,C >= 1, B >= 0 per peer review.
 # Concept (cite-all) DOI 10.5281/zenodo.20578400. GitHub repo
 # https://github.com/papanokechi/pcf-delta; no GitHub release, no webhook.
 # isSupplementTo target 10.5281/zenodo.20564681 confirmed before publish.
-# v1.1 version DOI verified live from zenodo.org/api/records/20585194 (2026-06-08).
+# v1.2 version DOI verified live (doi.org 302 -> zenodo.org/records/20587230,
+# Zenodo API version=1.2, file pcf-delta-v1.2.zip 479198 B) on 2026-06-08.
