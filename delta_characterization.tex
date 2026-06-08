@@ -24,7 +24,7 @@ continued fraction: structure, a closed-form bracket,\\
 and certified high-precision values}
 \author{Papanokechi\\
 \small ORCID: \href{https://orcid.org/0009-0000-6192-8273}{0009-0000-6192-8273}}
-\date{June 2026 \quad(\texttt{pcf-delta} v1.2 draft)}
+\date{June 2026 \quad(\texttt{pcf-delta} v1.3 draft)}
 
 \begin{document}
 \maketitle
@@ -58,7 +58,14 @@ monotone--bounded convergence $R_n\to\Rinf$, the closed-form bracket
 $1+S\le\Rinf\le1/(1-S)$, the independence-polynomial identity
 $R_n=\sum_T\prod_{i\in T}u_i$, and the finite-window cluster core
 $\sigma_2=e_2-a_1$ --- is machine-checked in Lean~4/Mathlib
-with clean axiom cones (no \texttt{sorry}).
+with clean axiom cones (no \texttt{sorry}). Version~1.3 enlarges this machine-checked
+core (Section~\ref{sec:lean-v13}): the Casoratian is generalized to an arbitrary
+second-order linear recurrence over any commutative ring (the classical $(-1)^n$
+being the unit-coefficient case), the independence identity is refined to its
+degree-graded form (a \textsc{proven} order-$3$ cluster window object, though the
+$\sigma_3$ \emph{closed form} stays structural), an $m$-term geometric-tail enclosure
+sharpening the bracket is proved, and an exact weighted partial-fraction telescoping
+identity is established for the $B=0$ family.
 \end{abstract}
 
 \noindent\textbf{2020 MSC:} 11J70 (primary), 11A55, 33B15, 05C31.\quad
@@ -109,7 +116,10 @@ uncontrolled relations as artifacts (Section~\ref{sec:null}).
 (i)--(iii) rest --- the Casoratian identity, the monotone--bounded convergence
 $R_n\to\Rinf$, and the closed-form bracket $1+S\le\Rinf\le1/(1-S)$ (conditional on
 $\sum u_n<\infty$ and $S<1$) --- are formalized in Lean~4/Mathlib with clean axiom
-cones (Section~\ref{sec:lean}).
+cones (Section~\ref{sec:lean}). Section~\ref{sec:lean-v13} adds v1.3 generalizations
+and refinements (a general Casoratian over any commutative ring, a degree-graded
+independence refinement, an $m$-term enclosure, and exact weighted telescoping for
+$B=0$), keeping every analytic input an explicit hypothesis.
 \end{enumerate}
 
 \paragraph{Relation to prior work.}
@@ -521,6 +531,86 @@ of scope for the formalization, and proved by hand/numerics above, are: the
 product constant $K_\Gamma$ and the Stirling/Gamma asymptotics of~\eqref{eq:law},
 and the non-elementarity conjecture.
 
+\section{Formalized generalizations and refinements}\label{sec:lean-v13}
+
+Version~1.3 extends the machine-checked core of Section~\ref{sec:lean} in four
+independent directions, keeping the same conditional-core discipline: all
+combinatorial and algebraic content is unconditional, and each analytic input is an
+explicit labelled hypothesis. Every declaration named below was checked with
+\texttt{\#print axioms} to a cone within
+$\{\texttt{propext},\texttt{Classical.choice},\texttt{Quot.sound}\}$
+(\texttt{IsSol.isSolG} depends on \emph{no} axioms at all), with no \texttt{sorryAx},
+no \texttt{sorry}/\texttt{admit} in source, and build exit~$0$; the harness
+\texttt{Check.lean} now reports $58$ such cones.
+
+\begin{theorem}[v1.3 formal additions; \textsc{proven}]\label{thm:lean-v13}
+The following hold with clean axiom cones.
+\begin{itemize}\sloppy
+\item[\textnormal{(A)}] \textbf{General Casoratian over a commutative ring.}
+\texttt{IsSol.isSolG}, \texttt{casoratian\_stepG}, \texttt{casoratian\_eqG},
+\texttt{pq\_casoratianG}: over any \texttt{CommRing} $R$, for arbitrary coefficient
+sequences $c,d:\N\to R$, every solution of the general second-order linear recurrence
+$s_{n+2}=c_{n+2}\,s_{n+1}+d_n\,s_n$ has Casoratian $W_n=p_nq_{n-1}-p_{n-1}q_n$
+obeying $W_{n+1}=-d_n\,W_n$, hence $W_n=\bigl(\prod_{k<n}(-d_k)\bigr)W_0$ and
+$p_{n+1}q_n-p_nq_{n+1}=\bigl(\prod_{k<n}(-d_k)\bigr)(p_1q_0-p_0q_1)$.
+\texttt{casoratian\_eqG\_recovers\_classical} specializes this at $d\equiv1$ to the
+$(-1)^n$ identity of Lemma~\ref{lem:caso}: the v1.2 Casoratian results are exactly its
+unit-coefficient case (a faithfulness witness for the generalization).
+
+\item[\textnormal{(B)}] \textbf{Degree-graded independence and the $\sigma_3$ window
+object.} \texttt{indepKWin}, \texttt{indepKWin\_succ\_succ},
+\texttt{indepPolyWin\_eq\_sum\_indepKWin}, \texttt{sigma3Win\_eq},
+\texttt{sigma3Win\_succ\_succ}: the independence polynomial of
+Proposition~\ref{prop:indpoly} is split into its degree-$k$ graded pieces
+$\mathrm{indepKWin}(u,k,a,b)=\sum_{|T|=k}\prod_{i\in T}u_i$ over no-two-consecutive
+$T\subseteq[a,b]$, each satisfying the deletion--contraction recurrence; summing over
+$k$ returns $\mathrm{indepPolyWin}$. The order-$3$ piece is the cluster window object
+$\mathrm{sigma3Win}=\mathrm{indepKWin}(u,3,\cdot,\cdot)$, whose recurrence is proved.
+\emph{The $\sigma_3$ closed form~\eqref{eq:sig3} is deliberately \textbf{not}
+promoted}: only the graded combinatorial object and its recurrence are
+\textsc{proven}; the identity
+$\sigma_3=\tfrac16(p_1^3-3p_1p_2+2p_3)-a_1p_1+c+t$ remains \textsc{structural}
+(Appendix~\ref{app:clusters}) and \textsc{verified} ($\sim10^{-54}$), because the
+$a_1p_1$ cross-term regroups monomials across the index cube and is not a termwise
+identity.
+
+\item[\textnormal{(C)}] \textbf{An $m$-term enclosure refining the bracket.}
+\texttt{tsum\_geomTail}, \texttt{Rinf\_enclosure}, \texttt{delta\_enclosure},
+\texttt{enclosure\_nonvacuous}, \texttt{m1\_recovers\_S\_bracket},
+\texttt{m1\_delta\_eq\_S\_bracket}, \texttt{H2\_zero\_forces\_sigma0\_le\_one}:
+with $L_m=\sum_{k=0}^m\sigma_k$, the partial-sum/geometric-tail sandwich gives
+$L_m\le\Rinf\le L_m+S^{m+1}/(1-S)$ and, when $L_m>0$,
+$\log L_m\le\delta\le\log\!\bigl(L_m+S^{m+1}/(1-S)\bigr)$, \emph{conditional} on the
+two labelled hypotheses \textnormal{(H1)}~$\Rinf=\sum_k\sigma_k$ and
+\textnormal{(H2)}~$0\le\sigma_k\le S^k$. At $m=1$ both endpoints reduce
+\emph{exactly} to the bracket of Proposition~\ref{prop:bracket}, and
+\textnormal{(H2)} at $k=0$ forces $\sigma_0\le1$ --- the two points raised in review,
+now proved rather than observed.
+
+\item[\textnormal{(D)}] \textbf{Exact weighted telescoping for the $B=0$ family.}
+\texttt{partialFraction}, \texttt{sum\_Ico\_telescope}, \texttt{weighted\_telescope},
+\texttt{weighted\_telescope\_value}, \texttt{weighted\_sum\_tendsto}: over any field,
+with $\beta_m=Am^2+C$ (the $B=0$ denominator) nonzero on the summation window, the
+weight $A(2m+1)=\beta_{m+1}-\beta_m$ makes $A(2m+1)/(\beta_m\beta_{m+1})$ telescope to
+the exact finite value
+\[
+  \sum_{m=1}^{N-1}\frac{A(2m+1)}{\beta_m\beta_{m+1}}=\frac1{A+C}-\frac1{AN^2+C},
+\]
+with no characteristic restriction (the $2$ only multiplies, never divides). Over
+$\R$ the infinite sum equals $1/(A+C)$, \textsc{proven} \emph{conditional} on the
+single labelled analytic input $1/(AN^2+C)\to0$. The \emph{unweighted} truncation
+$\sum1/(\beta_{m-1}\beta_m)$ has, by contrast, no rational closed form in $N$
+(Gosper's algorithm returns no telescoper); its $\coth$/digamma limit needs real
+special functions and is left out of scope, numerically \textsc{verified} only.
+\end{itemize}
+\end{theorem}
+
+\noindent No numerically \textsc{verified} statement is silently upgraded by these
+additions --- in particular the $\sigma_3$ closed form and the unweighted
+telescoping limit remain non-\textsc{proven} --- and the epistemic ledger
+\texttt{claims.jsonl} records, per result, the grade and the hypotheses under which
+each conditional statement may be cited downstream.
+
 \section{Epistemic status}\label{sec:status}
 
 \begin{itemize}
@@ -532,6 +622,14 @@ and the finite-window inclusion--exclusion core $\sigma_2=e_2-a_1$ of the $\sigm
 closed form (Proposition~\ref{prop:sigma}, unconditional); the bracket and limit are
 conditional on the elementary analytic input $\sum u_n<\infty$ (and $S<1$ for the
 bracket), the independence-polynomial and $\sigma_2$ cores require no analytic input.
+Version~1.3 (Theorem~\ref{thm:lean-v13}) further proves: the general Casoratian over
+any commutative ring (with the $(-1)^n$ case recovered as a faithfulness witness),
+the degree-graded independence refinement and the order-$3$ cluster window object
+\texttt{sigma3Win} (the $\sigma_3$ \emph{closed form} remains structural/verified and
+is \emph{not} promoted), the $m$-term enclosure $L_m\le\Rinf\le L_m+S^{m+1}/(1-S)$
+(conditional on $\Rinf=\sum_k\sigma_k$ and $0\le\sigma_k\le S^k$), and the exact
+weighted telescoping identity for the $B=0$ family (its conditional limit resting
+only on $1/(AN^2+C)\to0$).
 \item \textbf{STRUCTURAL} (complete elementary hand proof; not yet formalized): the
 scaled recurrence and tail estimate (Lemma~\ref{lem:scaled}), the closed forms for
 $S$ (Proposition~\ref{prop:S}), and --- completing the cluster forms beyond the Lean
@@ -561,20 +659,29 @@ Every numerical claim is reproduced by the following scripts (mpmath): the harne
 \texttt{verify\_clusters.py} and \texttt{verify\_inclusion\_exclusion.py} (the
 $\sigma_2,\sigma_3$ gate and the step-by-step inclusion--exclusion check,
 Proposition~\ref{prop:sigma}, Appendix~\ref{app:clusters});
+\texttt{verify\_sigma3\_finite\_window.py} (exact-rational gate for the order-$3$
+window object) and \texttt{verify\_telescope\_b0.py} (exact-rational gate for the
+weighted telescoping identity), both Theorem~\ref{thm:lean-v13};
 \texttt{hp\_delta\_v2.py} and \texttt{finalize\_m2.py} (the high-precision $\delta$
 values and Table~\ref{tab:hp}, output \texttt{delta\_values\_m2.txt});
 \texttt{verify\_forward\_crosscheck.py} (the independent cross-check);
 \texttt{hp\_probe.py}, \texttt{pslq\_stability.py} (the integer-relation nulls,
 Proposition~\ref{prop:null}); and the Lean package \texttt{lean/pcf\_continuant}
 (\texttt{Basic.lean}, \texttt{Bracket.lean}, \texttt{Indep.lean},
-\texttt{Sigma.lean}, \texttt{Check.lean};
-Theorem~\ref{thm:lean}). Version~1.0 of this note is archived at Zenodo (version DOI
+\texttt{Sigma.lean}, \texttt{Topic3.lean}, \texttt{Topic5.lean}, \texttt{Check.lean};
+Theorems~\ref{thm:lean} and~\ref{thm:lean-v13}). Version~1.0 of this note is archived
+at Zenodo (version DOI
 \texttt{10.5281/zenodo.20578401}, concept DOI \texttt{10.5281/zenodo.20578400}) as a
-supplement to the companion growth-law note~\cite{growth}; the present version adds
+supplement to the companion growth-law note~\cite{growth}; versions 1.1--1.2 added
 the machine-checked closed-form bracket (\texttt{rinf\_bracket}), the
 independence-polynomial identity (\texttt{indepPoly\_eq\_rseq}), and the
-finite-window $\sigma_2$ inclusion--exclusion core (\texttt{sigma2win\_eq}),
-Theorem~\ref{thm:lean}). The Lean sources and the verification scripts named above
+finite-window $\sigma_2$ inclusion--exclusion core (\texttt{sigma2win\_eq}); version
+1.3 adds the generalizations and refinements of Theorem~\ref{thm:lean-v13} (general
+Casoratian, degree-graded independence and the order-$3$ window object, the $m$-term
+enclosure, and exact weighted telescoping for $B=0$). The harness \texttt{Check.lean}
+now reports $58$ axiom cones, each a subset of
+$\{\texttt{propext},\texttt{Classical.choice},\texttt{Quot.sound}\}$ with no
+\texttt{sorryAx}. The Lean sources and the verification scripts named above
 accompany the deposit in its public repository,
 \url{https://github.com/papanokechi/pcf-delta}.
 \end{sloppypar}

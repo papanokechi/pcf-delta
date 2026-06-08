@@ -3,7 +3,7 @@
 # and deposit artifacts against this file before any mint.
 slug: pcf-delta
 title: "The growth-law correction constant δ = log R∞ of the quadratic polynomial continued fraction: structure, a closed-form bracket, and certified high-precision values"
-version: "1.2"
+version: "1.3"
 upload_type: publication
 publication_type: article
 creators:
@@ -27,7 +27,8 @@ github: "https://github.com/papanokechi/pcf-delta"
 # NOTE: the concept (cite-all) DOI is 20578400 — NOT the companion note 20564681.
 zenodo:
   concept_doi: "10.5281/zenodo.20578400"     # cite-all; stable across versions
-  v1_2_version_doi: "10.5281/zenodo.20587230"  # current release (v1.2, 2026-06-08)
+  # v1_3_version_doi: minted by hand at the v1.3 deposit (PENDING — not yet minted).
+  v1_2_version_doi: "10.5281/zenodo.20587230"  # superseded (v1.2, 2026-06-08)
   v1_1_version_doi: "10.5281/zenodo.20585194"  # superseded (v1.1, 2026-06-07)
   v1_0_version_doi: "10.5281/zenodo.20578401"  # frozen v1.0 (8 pp); archive/
 related_identifiers:
