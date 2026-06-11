@@ -342,12 +342,15 @@ Appendix A is exactly `indepKWin u 3`.  Its deletion–contraction recurrence is
 degree-3 summand of the proven reassembly `indepPolyWin_eq_sum_indepKWin`.  This
 promotes `σ₃` from STRUCTURAL to machine-checked **PROVEN** as a graded cluster sum.
 
-The alternative *inclusion–exclusion closed form* `σ₃ = e₃ − a₁·p₁ + c + t` is
-numerically VERIFIED (exact rational checks over many windows), but it is a genuine
-inclusion–exclusion identity: the cross term `a₁·p₁` permutes monomials across the
-index cube, so it is **not** a termwise `Finset.sum_congr` identity (it holds only
-after grouping equal monomials).  Its full formalization is deferred and it is **not**
-claimed PROVEN here. -/
+The alternative *inclusion–exclusion closed form* `σ₃ = e₃ − a₁·p₁ + c + t` (with
+`e₃` the degree-3 elementary-symmetric / all-ordered-triples sum) is now
+machine-checked **PROVEN** in `PcfContinuant.Sigma3` (`sigma3win_eq`, clean axiom
+cone).  The cross term `a₁·p₁` is **not** a termwise `Finset.sum_congr` identity; it
+is reconciled with `σ₃` via the bad-triple decomposition (`e₃ = σ₃ + B` and
+`a₁·p₁ = B + t + c`, where `B` is the ordered triples carrying ≥1 adjacency).
+Expressing `e₃` through the power sums as `(p₁³ − 3p₁p₂ + 2p₃)/6` is the classical
+Newton identity and is left STRUCTURAL (it is not needed: `e₃` is kept as the
+elementary-symmetric sum). -/
 
 /-- The weighted **`σ₃` cluster sum** over the window `[a,b]`: the degree-3 part of the
 independence polynomial — the sum over 3-element no-two-consecutive subsets. -/
