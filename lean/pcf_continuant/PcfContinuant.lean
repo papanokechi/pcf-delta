@@ -2,5 +2,8 @@ import PcfContinuant.Basic
 import PcfContinuant.Bracket
 import PcfContinuant.Indep
 import PcfContinuant.Sigma
+import PcfContinuant.Sigma3
 import PcfContinuant.Topic3
 import PcfContinuant.Topic5
+import PcfContinuant.HigherCaso
+import PcfContinuant.GeneralCaso

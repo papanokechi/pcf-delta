@@ -180,6 +180,19 @@ theorem rseq_mono (u : ℕ → ℝ) (hu : ∀ n, 0 ≤ u n) (n : ℕ) :
       simp only [rseq]
       linarith
 
+/-- `rseq` is *strictly* increasing on indices `≥ 1`: `rseq u (n+1) < rseq u (n+2)`
+when all `u n > 0` (the genuine situation, since `u n = 1/(b_{n-1} b_n) > 0`).
+The consecutive-step `rseq_mono` only gives `≤` (it needs merely `u ≥ 0`); strictness
+is what the manuscript's "strictly increasing" actually asserts.  Note `rseq` is flat at
+the very start (`rseq u 0 = rseq u 1 = 1`), so strictness begins at index `1`. -/
+theorem rseq_strictMono_succ (u : ℕ → ℝ) (hu : ∀ n, 0 < u n) (n : ℕ) :
+    rseq u (n + 1) < rseq u (n + 2) := by
+  have hrn : (1 : ℝ) ≤ rseq u n := (rseq_ge_one u (fun k => (hu k).le) n).1
+  have hpos : 0 < u (n + 2) * rseq u n :=
+    mul_pos (hu (n + 2)) (lt_of_lt_of_le zero_lt_one hrn)
+  simp only [rseq]
+  linarith
+
 end Order
 
 /-! ## Limit existence (conditional core): `Rₙ → R∞`

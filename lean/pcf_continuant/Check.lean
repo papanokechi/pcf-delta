@@ -2,8 +2,11 @@ import PcfContinuant.Basic
 import PcfContinuant.Bracket
 import PcfContinuant.Indep
 import PcfContinuant.Sigma
+import PcfContinuant.Sigma3
 import PcfContinuant.Topic3
 import PcfContinuant.Topic5
+import PcfContinuant.HigherCaso
+import PcfContinuant.GeneralCaso
 
 open PcfContinuant
 
@@ -12,6 +15,7 @@ open PcfContinuant
 #print axioms pq_casoratian
 #print axioms rseq_ge_one
 #print axioms rseq_mono
+#print axioms rseq_strictMono_succ
 #print axioms rseq_monotone
 #print axioms rmaj_ge_one
 #print axioms rmaj_mono
@@ -39,6 +43,13 @@ open PcfContinuant
 -- Finite-window cluster closed form σ₂ (Sigma.lean): σ₂ = e₂ − a₁.
 -- STRUCTURAL → PROVEN.
 #print axioms sigma2win_eq
+
+-- Finite-window cluster closed form σ₃ (Sigma3.lean): the Appendix-A inclusion–
+-- exclusion identity σ₃ = e₃ − a₁·p₁ + c + t over an ordered-triple encoding.
+-- VERIFIED → PROVEN (clean axiom cone, fully finitary; the cross term a₁·p₁ is
+-- reconciled with σ₃ via the bad-triple decomposition, no analytic input).
+#print axioms partition_l
+#print axioms sigma3win_eq
 
 -- Topic 2 (Indep.lean): general weighted independence-polynomial engine —
 -- arbitrary-window deletion-contraction and its degree-graded (σ_k) refinement.
@@ -93,3 +104,28 @@ open PcfContinuant
 #print axioms PcfContinuant.Topic5.weighted_telescope
 #print axioms PcfContinuant.Topic5.weighted_telescope_value
 #print axioms PcfContinuant.Topic5.weighted_sum_tendsto
+
+-- Topic 6 (HigherCaso.lean): HIGHER-ORDER Casoratians — the new order≥3 research
+-- space.  Abel–Jacobi–Liouville first-order law for the order-3 discrete Wronskian
+-- of a PCF / simultaneous-Hermite–Padé recurrence: C(n+1) = c₀(n)·C(n), hence the
+-- closed product form C(n) = (∏_{m<n} c₀ m)·C(0).  Order-2 (corpus sign −c₀) is the
+-- faithfulness witness.  All finitary; clean cones, no analytic input.  PROVEN.
+#print axioms PcfHigherCaso.caso2_step
+#print axioms PcfHigherCaso.caso3_step
+#print axioms PcfHigherCaso.caso3_eq
+#print axioms PcfHigherCaso.caso3_eq_const
+#print axioms PcfHigherCaso.caso3_ne_zero_of_init
+
+-- Topic 6 (GeneralCaso.lean): GENERAL-ORDER (arbitrary k) Casoratian law — the
+-- uniform-in-k Abel–Jacobi–Liouville theorem for the order-(k+1) discrete
+-- Wronskian.  The last row of C(n+1), rewritten by the (k+1)-term recurrence, is a
+-- linear combination of the cyclically rotated rows of C(n); det_updateRow_sum
+-- collapses it to the c₀ coefficient and sign_finRotate contributes the cyclic
+-- sign (-1)^k, giving C(n+1) = (-1)^k·c₀(n)·C(n) and the closed product form.
+-- k=1 recovers the order-2 sign −c₀, k=2 the order-3 sign +c₀.  Includes the
+-- constant-coefficient power form and the integral-domain non-vanishing
+-- (linear-independence) certificate.  All finitary; clean cones.  PROVEN.
+#print axioms PcfGeneralCaso.casoMat_det_step
+#print axioms PcfGeneralCaso.casoMat_det_eq
+#print axioms PcfGeneralCaso.casoMat_det_eq_const
+#print axioms PcfGeneralCaso.casoMat_det_ne_zero_of_init
