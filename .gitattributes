@@ -1,0 +1,9 @@
+# The push gate must check out with LF endings.
+#
+# core.autocrlf is true at system level on the operator's Windows box. Git's
+# bundled MSYS sh happens to tolerate a CRLF shebang, so the hook survived a
+# CRLF checkout when tested -- but that is one shell's implementation detail,
+# not a guarantee, and the thing it would silently break is the push gate.
+# Pin it rather than rely on the tolerance.
+tools/hooks/** text eol=lf
+*.sh           text eol=lf
