@@ -1,16 +1,47 @@
 #!/bin/sh
 # Push is operator-gated. Agents commit freely; only the operator pushes.
-# Pushing to a public remote is publishing — an irreversible, public action that
+# Pushing to a public remote is publishing -- an irreversible, public action that
 # belongs in the same tier as minting a Zenodo DOI.
 #
 # This hook is tracked in-repo (tools/hooks) and activated via
 #   git config core.hooksPath tools/hooks
 # so it is consistent across clones (unlike .git/hooks, which is not versioned).
+#
+# The message prints three shell forms because printing only the POSIX one made the
+# gate unopenable-by-its-own-instructions in PowerShell, which reads as a broken git
+# rather than a wrong line -- and what is to hand at that moment is --no-verify.
+# cmd.exe quoting is required: `set VAR=1 &&` stores "1 " and fails the test below.
+#
+# The [gate:] marker and the echoed value exist because three unrelated failures all
+# present as "the gate blocked me": the WSL/execvpe interpreter death, the cmd.exe
+# quoting trap, and git exit-128 on a branch with no upstream. Only one is this gate.
+# The marker attributes the output; the echoed value diagnoses the quoting trap on
+# sight instead of leaving the operator to guess.
 if [ "${SIARC_OPERATOR:-0}" != "1" ]; then
-  echo "BLOCKED: push is operator-gated." >&2
+  echo "BLOCKED: push is operator-gated.  [gate: tools/hooks/pre-push]" >&2
   echo "Agents commit freely; only the operator pushes." >&2
-  echo "To push, set SIARC_OPERATOR=1 in an interactive operator shell:" >&2
-  echo "    SIARC_OPERATOR=1 git push" >&2
+  echo "" >&2
+  if [ -n "${SIARC_OPERATOR}" ]; then
+    echo "SIARC_OPERATOR is set, but to [${SIARC_OPERATOR}] -- this gate requires exactly [1]." >&2
+    echo "A trailing space is the usual cause; see the cmd.exe note below." >&2
+  else
+    echo "SIARC_OPERATOR is not set in this shell." >&2
+  fi
+  echo "" >&2
+  echo "To push, set SIARC_OPERATOR=1 in an interactive operator shell." >&2
+  echo "The syntax differs by shell -- use the line for the shell you are in:" >&2
+  echo "" >&2
+  echo '  PowerShell   $env:SIARC_OPERATOR=1; git push; Remove-Item Env:\SIARC_OPERATOR' >&2
+  echo '  cmd.exe      set "SIARC_OPERATOR=1" && git push && set "SIARC_OPERATOR="' >&2
+  echo '  bash/sh/zsh  SIARC_OPERATOR=1 git push' >&2
+  echo "" >&2
+  echo 'The cmd.exe quotes are required: `set VAR=1 &&` stores "1 " and will not open' >&2
+  echo "the gate. If the branch has no upstream, use 'git push origin <branch>' --" >&2
+  echo "a bare 'git push' then fails with a different error that also looks like this" >&2
+  echo "gate but carries no [gate:] marker." >&2
+  echo "" >&2
+  echo "If a line above appears not to work, it is the wrong line for your shell," >&2
+  echo "not a broken gate. Do NOT reach for --no-verify." >&2
   exit 1
 fi
 exit 0
