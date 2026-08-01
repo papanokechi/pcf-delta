@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Push is operator-gated. Agents commit freely; only the operator pushes.
 # Pushing to a public remote is publishing — an irreversible, public action that
 # belongs in the same tier as minting a Zenodo DOI.
