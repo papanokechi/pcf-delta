@@ -7,6 +7,7 @@ import PcfContinuant.Topic3
 import PcfContinuant.Topic5
 import PcfContinuant.HigherCaso
 import PcfContinuant.GeneralCaso
+import PcfContinuant.HermitePade
 
 open PcfContinuant
 
@@ -115,6 +116,7 @@ open PcfContinuant
 #print axioms PcfHigherCaso.caso3_eq
 #print axioms PcfHigherCaso.caso3_eq_const
 #print axioms PcfHigherCaso.caso3_ne_zero_of_init
+#print axioms PcfHigherCaso.caso3_matches_general
 
 -- Topic 6 (GeneralCaso.lean): GENERAL-ORDER (arbitrary k) Casoratian law — the
 -- uniform-in-k Abel–Jacobi–Liouville theorem for the order-(k+1) discrete
@@ -129,3 +131,48 @@ open PcfContinuant
 #print axioms PcfGeneralCaso.casoMat_det_eq
 #print axioms PcfGeneralCaso.casoMat_det_eq_const
 #print axioms PcfGeneralCaso.casoMat_det_ne_zero_of_init
+
+-- §7 converse (GeneralCaso.lean): the FUNDAMENTAL-SYSTEM / completeness converse
+-- to the Abel–Jacobi–Liouville law.  `sol_unique_of_init` is forward determinacy
+-- (a solution is fixed by its first k+1 values); `solution_isLinearCombo` is
+-- completeness (when C(0) is a unit, every solution is a linear combination of
+-- the k+1 basis solutions).  With casoMat_det_ne_zero_of_init (independence) this
+-- makes {s t} a machine-checked fundamental set — the object Hermite–Padé / Apéry
+-- applications consume.  STRUCTURAL → PROVEN (clean cones, finitary + Matrix-inverse
+-- infrastructure; Classical.choice inherited as in casoMat_det_eq).
+#print axioms PcfGeneralCaso.sol_unique_of_init
+#print axioms PcfGeneralCaso.solution_isLinearCombo
+
+-- Hermite–Padé / Apéry irrationality certificate (HermitePade.lean): the §7
+-- fundamental set put to work.  `caso_mulVec_apply` identifies a linear form's
+-- consecutive-window with `casoMat *ᵥ a`; `linForm_window_ne_zero` (over a domain,
+-- Casoratian ≠ 0) shows a nontrivial form cannot vanish on a full (k+1)-window, hence
+-- `linForm_frequently_ne_zero` (infinitely often nonzero).  `irrational_of_linearForm_
+-- frequently` is the Dirichlet/Hermite–Padé criterion (frequently-nonzero + tends-to-0
+-- ⇒ irrational); `irrational_of_fundamentalSet_form` discharges its non-vanishing input
+-- structurally from the Casoratian (a REAL coefficient vector v ≠ 0), leaving the limit
+-- as the single labelled analytic hypothesis.  The geometric block (roots 1,2,3:
+-- `gsol = {1,2ⁿ,3ⁿ}`, `gc = (6,-11,6)`, non-vanishing Casoratian 2·6ⁿ) supplies the
+-- "no three consecutive zeros" certificate `geom_window_ne_zero`.  The CONCRETE
+-- irrationality certificate instantiates the fundamental set on the order-3 Fibonacci
+-- recurrence u(n+3)=2u(n+2)−u(n) (roots φ,ψ,1): `fibSol = {1,Fₙ,Fₙ₊₁}` with initial
+-- Cassini Casoratian 1 (`fibCaso0`) hence everywhere-nonzero (`fibCaso_ne_zero`), and the
+-- shrinking Hermite–Padé remainder Fₙ·φ−Fₙ₊₁ = −ψⁿ → 0 (`fib_remainder_tendsto`).  These
+-- combine in `goldenRatio_irrational_via_caso : Irrational φ`, an independent Casoratian
+-- route to the golden ratio's irrationality (distinct from Mathlib's √5 proof).
+-- Finitary core PROVEN; clean cones (Classical.choice inherited via Matrix inverse /
+-- the real-analysis limit infrastructure).
+#print axioms PcfHermitePade.caso_mulVec_apply
+#print axioms PcfHermitePade.linForm_window_ne_zero
+#print axioms PcfHermitePade.linForm_frequently_ne_zero
+#print axioms PcfHermitePade.irrational_of_linearForm_frequently
+#print axioms PcfHermitePade.irrational_of_fundamentalSet_form
+#print axioms PcfHermitePade.gsol_rec
+#print axioms PcfHermitePade.gcaso0
+#print axioms PcfHermitePade.gcaso_ne_zero
+#print axioms PcfHermitePade.geom_window_ne_zero
+#print axioms PcfHermitePade.fibSol_rec
+#print axioms PcfHermitePade.fibCaso0
+#print axioms PcfHermitePade.fibCaso_ne_zero
+#print axioms PcfHermitePade.fib_remainder_tendsto
+#print axioms PcfHermitePade.goldenRatio_irrational_via_caso
