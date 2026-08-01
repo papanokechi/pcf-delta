@@ -175,6 +175,20 @@ Write-Host ("zip: {0} ({1} content files + SHA256SUMS.txt; {2:N0} bytes)" -f `
     (Split-Path $zipPath -Leaf), $zn, (Get-Item $zipPath).Length)
 Write-Host "zip SHA-256: $zipHash"
 
+# --- 4b. GATE: the deposit source must be committed and pushed ---
+#     A version bump that exists only in a working tree has not happened.
+#     $LASTEXITCODE is captured immediately: any later command overwrites it.
+#     Write-Error is NOT used here. This script sets $ErrorActionPreference =
+#     'Stop' at the top, which makes Write-Error terminating -- the exit line
+#     below would then be unreachable and pwsh would return 1 for every gate
+#     failure, collapsing 2 (unpushed) and 3 (CANNOT RUN) into 1 (uncommitted).
+&  "$PSScriptRoot\check_deposit_clean.ps1" -RepoPath "$PSScriptRoot\.."
+$gate = $LASTEXITCODE
+if ($gate -ne 0) {
+    [Console]::Error.WriteLine("Deposit NOT finished - see gate output above. (1=uncommitted 2=unpushed 3=gate could not run)")
+    exit $gate
+}
+
 # --- 5. STOP: report, do not mint ---
 Write-Host ""
 Write-Host "Deposit assembled, validated, and packaged at: $deposit"
