@@ -24,7 +24,7 @@ continued fraction: structure, a closed-form bracket,\\
 and certified high-precision values}
 \author{Papanokechi\\
 \small ORCID: \href{https://orcid.org/0009-0000-6192-8273}{0009-0000-6192-8273}}
-\date{June 2026 \quad(\texttt{pcf-delta} v1.3 draft)}
+\date{June 2026 \quad(\texttt{pcf-delta} v1.4 draft)}
 
 \begin{document}
 \maketitle
@@ -37,8 +37,9 @@ $q_n=b_nq_{n-1}+q_{n-2}$). A companion note proves the growth law
 $\log q_n=n\log A+2\log(n!)+\tfrac{B}{A}\log n+(K_\Gamma+\delta)+\kappa/n+O(1/n^2)$,
 in which the product constant $K_\Gamma=-\log(\Gamma(1-r_1)\Gamma(1-r_2))$ is
 closed-form but the correction $\delta=\log\Rinf>0$, with
-$\Rinf=\lim_n q_n/\prod_{k\le n}b_k$, is left undetermined. This note
-\emph{characterizes} $\delta$. We show that the scaled limit $\Rinf$ is exactly
+$\Rinf=\lim_n q_n/\prod_{k\le n}b_k$, is left undetermined.
+
+This note \emph{characterizes} $\delta$. We show that the scaled limit $\Rinf$ is exactly
 the \emph{independence polynomial of a path graph} evaluated at the weights
 $u_n=1/(b_{n-1}b_n)$, giving a cluster expansion $\Rinf=\sum_{k\ge0}\sigma_k$ with
 $\sigma_k\le S^k$, $S=\sum_{n\ge2}u_n$. From it we derive a closed-form two-sided
@@ -55,17 +56,12 @@ precision-stability test shows the uncontrolled relations to be numerical
 artifacts; we record $\delta$ as conjecturally a new transcendental constant of the
 family. Finally, the finitary structural core --- the Casoratian identity, the
 monotone--bounded convergence $R_n\to\Rinf$, the closed-form bracket
-$1+S\le\Rinf\le1/(1-S)$, the independence-polynomial identity
-$R_n=\sum_T\prod_{i\in T}u_i$, and the finite-window cluster core
-$\sigma_2=e_2-a_1$ --- is machine-checked in Lean~4/Mathlib
-with clean axiom cones (no \texttt{sorry}). Version~1.3 enlarges this machine-checked
-core (Section~\ref{sec:lean-v13}): the Casoratian is generalized to an arbitrary
-second-order linear recurrence over any commutative ring (the classical $(-1)^n$
-being the unit-coefficient case), the independence identity is refined to its
-degree-graded form (a \textsc{proven} order-$3$ cluster window object, though the
-$\sigma_3$ \emph{closed form} stays structural), an $m$-term geometric-tail enclosure
-sharpening the bracket is proved, and an exact weighted partial-fraction telescoping
-identity is established for the $B=0$ family.
+$1+S\le\Rinf\le1/(1-S)$, and the independence-polynomial identity
+$R_n=\sum_T\prod_{i\in T}u_i$ --- is machine-checked in Lean~4/Mathlib with clean axiom
+cones (no \texttt{sorry}); Versions~1.3--1.4 enlarge this core (Section~\ref{sec:lean-v13})
+with a general-ring Casoratian, a degree-graded refinement carrying the $\sigma_3$ closed
+form, an $m$-term geometric-tail enclosure, and exact weighted telescoping for the $B=0$
+family.
 \end{abstract}
 
 \noindent\textbf{2020 MSC:} 11J70 (primary), 11A55, 33B15, 05C31.\quad
@@ -86,13 +82,18 @@ note~\cite{growth} establishes the exact two-sided growth law
 where $r_1,r_2$ are the roots of $Ax^2+Bx+C$,
 $K_\Gamma=-\log(\Gamma(1-r_1)\Gamma(1-r_2))$ is the \emph{product constant} (at
 $B=0$ equal to $\log(\sinh(\pi\sqrt{C/A})/(\pi\sqrt{C/A}))$),
-$\kappa=\tfrac12(B^2/A^2+B/A-2C/A)$, and
+$\kappa=\tfrac12(B^2/A^2+B/A-2C/A)$ (which arises \emph{solely} from the
+Euler--Maclaurin tail of the product $\log P_n=\sum_{k\le n}\log b_k$, \emph{not} from
+$\delta$), and
 \begin{equation}\label{eq:delta}
   \delta=\log\Rinf>0,\qquad \Rinf=\lim_{n\to\infty}\frac{q_n}{\prod_{k=1}^n b_k}
 \end{equation}
 is the \emph{correction constant} produced by the $+q_{n-2}$ term of the recurrence.
 The product piece $K_\Gamma$ is closed-form; the companion note claims \emph{no}
 closed form for $\delta$ and treats it as a black box. This note opens the box.
+For self-containment we stress that the growth law~\eqref{eq:law} enters only as
+motivation: every result below concerns $\Rinf=\lim_n q_n/\prod_{k\le n}b_k$ directly and
+is logically independent of~\eqref{eq:law}, which is itself openly deposited~\cite{growth}.
 
 Our contributions are, in increasing order of analytic depth:
 \begin{enumerate}
@@ -116,9 +117,10 @@ uncontrolled relations as artifacts (Section~\ref{sec:null}).
 (i)--(iii) rest --- the Casoratian identity, the monotone--bounded convergence
 $R_n\to\Rinf$, and the closed-form bracket $1+S\le\Rinf\le1/(1-S)$ (conditional on
 $\sum u_n<\infty$ and $S<1$) --- are formalized in Lean~4/Mathlib with clean axiom
-cones (Section~\ref{sec:lean}). Section~\ref{sec:lean-v13} adds v1.3 generalizations
+cones (Section~\ref{sec:lean}). Section~\ref{sec:lean-v13} adds v1.3--v1.4 generalizations
 and refinements (a general Casoratian over any commutative ring, a degree-graded
-independence refinement, an $m$-term enclosure, and exact weighted telescoping for
+independence refinement and the $\sigma_3$ closed form, an $m$-term enclosure, and
+exact weighted telescoping for
 $B=0$), keeping every analytic input an explicit hypothesis.
 \end{enumerate}
 
@@ -166,8 +168,9 @@ numerical claims are reproduced by the scripts named in Section~\ref{sec:code}.
 Let $R_n:=q_n/P_n$, so $R_0=R_1=1$. The convergent numerators $p_n$
 ($p_{-1}=1,p_0=1$) satisfy the same second-order recurrence; set $P^{\,\mathrm{num}}_n:=p_n/P_n$.
 
-\begin{lemma}[Scaled recurrence; \textsc{structural}, Lean core in
-Section~\ref{sec:lean}]\label{lem:scaled}
+\begin{lemma}[Scaled recurrence; \textsc{structural} (tail rate); strict-increase
+sub-fact \textsc{proven} (\texttt{rseq\_strictMono\_succ}, Section~\ref{sec:lean-v13}),
+convergence core in Section~\ref{sec:lean}]\label{lem:scaled}
 For all $n\ge2$,
 \[
   R_n=R_{n-1}+u_n R_{n-2},\qquad u_n:=\frac{1}{b_{n-1}b_n}>0 .
@@ -276,7 +279,12 @@ $\Rinf\ge1+S$. For the upper bound, by~\eqref{eq:cluster} and $\sigma_k\le S^k$,
 $\Rinf=\sum_k\sigma_k\le\sum_k S^k=1/(1-S)$ (using $S<1$: each $b_k=Ak^2+Bk+C$ is
 increasing in each of $A,B,C$ for $k\ge1$, so $u_n=1/(b_{n-1}b_n)$ and hence
 $S=\sum_{n\ge2}u_n$ are maximized at the minimal admissible triple $(1,0,1)$, giving
-$S\le S(1,0,1)\approx0.1307<1$). Apply $\log$.
+$S\le S(1,0,1)\approx0.1307<1$).\footnote{Monotonicity, stated cleanly: for fixed
+$k\ge1$ the partials $\partial b_k/\partial(A,B,C)=(k^2,k,1)$ are positive, so
+$b_k=Ak^2+Bk+C$ is strictly increasing in each of $A,B,C$; hence $u_n=1/(b_{n-1}b_n)$
+and $S=\sum_{n\ge2}u_n$ are strictly decreasing in each. The admissible family has
+componentwise-minimal element $(1,0,1)$, whence $\sup S=S(1,0,1)\approx0.1307<1$.}
+Apply $\log$.
 \end{proof}
 
 \noindent The bracket is deliberately coarse: the lower bound keeps only
@@ -307,7 +315,9 @@ If the four poles are distinct,
   \Res_\rho=\frac{1}{A^2\prod_{\sigma\ne\rho}(\rho-\sigma)},
 \end{equation}
 with $\psi$ the digamma function (the sum of residues vanishes, $\sum_\rho\Res_\rho=0$,
-reflecting $1/(b_{n-1}b_n)=O(n^{-4})$, so the individually divergent $\psi$-pieces
+because $1/(b_{n-1}b_n)$ is a proper rational function whose denominator degree exceeds
+the numerator degree by $4\ge2$ --- equivalently its residue at $\infty$ is $0$ --- so the
+individually divergent $\psi$-pieces
 combine convergently). For repeated poles, partial fractions over the multiset of
 multiplicities $m_\rho$ give the confluent form
 \begin{equation}\label{eq:Sconfluent}
@@ -329,7 +339,11 @@ for $(A,B,C)=(1,2,1)$, $b_n=(n+1)^2$ has poles $\{-1,-1,0,0\}$ and
 \begin{equation}\label{eq:S121}
   S(1,2,1)=\frac{\pi^2}{3}-\frac{13}{4}=0.0398681336964528729\ldots,
 \end{equation}
-matched to $10^{-40}$. (Under the standing assumptions the poles of
+matched to $10^{-40}$.\footnote{Elementarily, here $u_n=1/(b_{n-1}b_n)=1/(n^2(n+1)^2)
+=\big(\tfrac1n-\tfrac1{n+1}\big)^2=\tfrac1{n^2}-\tfrac{2}{n(n+1)}+\tfrac1{(n+1)^2}$,
+so $\sum_{n\ge1}u_n=\zeta(2)+(\zeta(2)-1)-2=2\zeta(2)-3=\tfrac{\pi^2}{3}-3$ (the middle
+sum telescopes, $\sum_{n\ge1}1/(n(n+1))=1$); subtracting the $n=1$ term $u_1=\tfrac14$
+leaves the $n\ge2$ sum $S(1,2,1)=\sum_{n\ge2}u_n=\tfrac{\pi^2}{3}-\tfrac{13}{4}$.} (Under the standing assumptions the poles of
 $1/(b_{n-1}b_n)$, namely $r_1,r_2,1+r_1,1+r_2$, each have real part $\le1<2$ because
 $\operatorname{Re}r_i\le0$; hence no summation index $n\ge2$ is a pole and the
 residue and confluent forms apply throughout.) Table~\ref{tab:bracket} shows the bracket on
@@ -376,9 +390,9 @@ Proposition~\ref{prop:S}, exact via $\psi$), and adjacency sums
 $a_1=\sum_n u_nu_{n+1}$, $c=\sum_n u_nu_{n+1}(u_n+u_{n+1})$,
 $t=\sum_n u_nu_{n+1}u_{n+2}$.
 
-\begin{proposition}[Cluster closed forms; $\sigma_2$ core \textsc{proven}
-(Lean, Theorem~\ref{thm:lean}), $\sigma_3$ \textsc{structural}
-(Appendix~\ref{app:clusters}), \textsc{verified} to $\sim10^{-54}$]
+\begin{proposition}[Cluster closed forms; $\sigma_2,\sigma_3$ inclusion--exclusion
+cores \textsc{proven} (Lean, Theorems~\ref{thm:lean},~\ref{thm:lean-v13}),
+\textsc{verified} to $\sim10^{-54}$]
 \label{prop:sigma}
 Equations~\eqref{eq:sig2}--\eqref{eq:sig3} hold: the unrestricted elementary
 symmetric sums $e_2=\tfrac12(p_1^2-p_2)$, $e_3=\tfrac16(p_1^3-3p_1p_2+2p_3)$
@@ -394,12 +408,22 @@ downward recurrence~\eqref{eq:downward} seeded by
 $1+\sigma_1(M)+\sigma_2(M)+\sigma_3(M)$ gives the values in
 Table~\ref{tab:hp}.
 
+\paragraph{What ``certified'' means.} Throughout, ``certified to $N$ digits'' is a
+\emph{concordance} claim, not a proven error bound: the leading $N$ digits are stable
+under (a) seed-order independence, (b) self-convergence in the truncation $M$, and
+(c) an independent forward/Neville extrapolation, and are consistent with the
+seed-truncation estimate $O(M^{-3(p+1)})=O(M^{-12})$ for the order-$p{=}3$ seed.
+
 For the reference triple $(1,0,1)$ we certify $\delta$ \emph{three} independent ways
 at $M=10^6$ (working precision $170$ digits): seed-order independence (order-$2$ vs
 order-$3$ seed agree to $56$ digits; order-$3$ vs order-$3$-plus-leading-$\sigma_4$
 to $75$ digits), self-convergence ($M=10^5$ vs $10^6$ agree to $47$ digits), and a
 fully independent forward continuant with Neville extrapolation in $1/N$ (agrees to
-$\sim25$ digits, its own resolution ceiling). The conservative reliable count is
+$\sim25$ digits, its own resolution ceiling). The two cluster-based certificates share
+the downward-recurrence machinery, so the $\ge47$-digit agreement is \emph{internal}
+concordance among methods sharing that machinery; the only \emph{fully independent} route
+(forward/Neville) confirms $\sim25$ digits, the honest floor on cross-\emph{method}
+confirmation. The conservative reliable count is
 $\ge44$ digits:
 \begin{equation}\label{eq:delta101}
   \delta(1,0,1)=0.12385719436062639272850498970259084096757955\ldots
@@ -517,8 +541,9 @@ at the top vertex (over $\R$, no positivity needed).
 $\sigma_2$ closed form (Proposition~\ref{prop:sigma}, Appendix~\ref{app:clusters}),
 \emph{unconditionally}: over any window $[m,M]$, the no-two-consecutive pair sum
 equals $\sigma_2=e_2-a_1$ (every ordered pair is consecutive or not). The Newton
-reduction $e_2=\tfrac12(p_1^2-p_2)$ and the $\sigma_3$ closed form are not yet
-formalized (see \textsc{structural} below).
+reduction $e_2=\tfrac12(p_1^2-p_2)$ is not yet formalized (see \textsc{structural}
+below); the $\sigma_3$ inclusion--exclusion core is separately \textsc{proven} in
+Version~1.4 (\texttt{sigma3win\_eq}, Theorem~\ref{thm:lean-v13}).
 \end{itemize}
 \end{theorem}
 
@@ -533,7 +558,7 @@ and the non-elementarity conjecture.
 
 \section{Formalized generalizations and refinements}\label{sec:lean-v13}
 
-Version~1.3 extends the machine-checked core of Section~\ref{sec:lean} in four
+Versions~1.3 and~1.4 extend the machine-checked core of Section~\ref{sec:lean} in four
 independent directions, keeping the same conditional-core discipline: all
 combinatorial and algebraic content is unconditional, and each analytic input is an
 explicit labelled hypothesis. Every declaration named below was checked with
@@ -541,9 +566,31 @@ explicit labelled hypothesis. Every declaration named below was checked with
 $\{\texttt{propext},\texttt{Classical.choice},\texttt{Quot.sound}\}$
 (\texttt{IsSol.isSolG} depends on \emph{no} axioms at all), with no \texttt{sorryAx},
 no \texttt{sorry}/\texttt{admit} in source, and build exit~$0$; the harness
-\texttt{Check.lean} now reports $58$ such cones.
+\texttt{Check.lean} now reports $61$ such cones (Version~1.4 adds the $\sigma_3$
+closed form \texttt{sigma3win\_eq}/\texttt{partition\_l} and a strict-monotonicity
+cone \texttt{rseq\_strictMono\_succ} for the scaled recurrence of
+Lemma~\ref{lem:scaled}).
 
-\begin{theorem}[v1.3 formal additions; \textsc{proven}]\label{thm:lean-v13}
+In mathematical terms, before naming the formal declarations, the four additions are
+the following. \textbf{(A)} The Casoratian (discrete Wronskian) identity holds not
+only for the classical continuant but for an \emph{arbitrary} second-order linear
+recurrence $s_{n+2}=c_{n+2}s_{n+1}+d_ns_n$ over any commutative ring: the Casoratian
+satisfies $W_{n+1}=-d_nW_n$, so it is the running product $\prod_{k<n}(-d_k)$ times its
+initial value, and the classical alternating $(-1)^n$ is exactly the unit-coefficient
+($d\equiv1$) specialization. \textbf{(B)} The independence-polynomial identity for
+$\Rinf$ is refined into its degree-graded pieces --- the order-$k$ cluster sums
+$\sigma_k$ --- each obeying its own deletion--contraction recurrence; and, new in
+Version~1.4, the order-$3$ closed form $\sigma_3=e_3-a_1p_1+c+t$ is itself proved, by
+an inclusion--exclusion (bad-triple) decomposition that reconciles the non-termwise
+cross term $a_1p_1$ with the restricted sum. \textbf{(C)} The coarse bracket of
+Proposition~\ref{prop:bracket} is sharpened to an $m$-term enclosure that sandwiches
+$\Rinf$ between a partial cluster sum $L_m$ and $L_m$ plus an exact geometric tail,
+collapsing to the bracket at $m=1$. \textbf{(D)} For the $B=0$ family the weighted
+sum $\sum A(2m+1)/(\beta_m\beta_{m+1})$ telescopes in closed form by partial fractions,
+with a clean conditional limit. Each is stated precisely below, followed by the Lean
+declarations that witness it.
+
+\begin{theorem}[v1.3--v1.4 formal additions; \textsc{proven}]\label{thm:lean-v13}
 The following hold with clean axiom cones.
 \begin{itemize}\sloppy
 \item[\textnormal{(A)}] \textbf{General Casoratian over a commutative ring.}
@@ -553,26 +600,30 @@ sequences $c,d:\N\to R$, every solution of the general second-order linear recur
 $s_{n+2}=c_{n+2}\,s_{n+1}+d_n\,s_n$ has Casoratian $W_n=p_nq_{n-1}-p_{n-1}q_n$
 obeying $W_{n+1}=-d_n\,W_n$, hence $W_n=\bigl(\prod_{k<n}(-d_k)\bigr)W_0$ and
 $p_{n+1}q_n-p_nq_{n+1}=\bigl(\prod_{k<n}(-d_k)\bigr)(p_1q_0-p_0q_1)$.
-\texttt{casoratian\_eqG\_recovers\_classical} specializes this at $d\equiv1$ to the
+Specialized at $d\equiv1$ (\texttt{casoratian\_eqG\_recovers\_classical}), this is the
 $(-1)^n$ identity of Lemma~\ref{lem:caso}: the v1.2 Casoratian results are exactly its
 unit-coefficient case (a faithfulness witness for the generalization).
 
-\item[\textnormal{(B)}] \textbf{Degree-graded independence and the $\sigma_3$ window
-object.} \texttt{indepKWin}, \texttt{indepKWin\_succ\_succ},
+\item[\textnormal{(B)}] \textbf{Degree-graded independence, the $\sigma_3$ window
+object, and the $\sigma_3$ closed form.} \texttt{indepKWin}, \texttt{indepKWin\_succ\_succ},
 \texttt{indepPolyWin\_eq\_sum\_indepKWin}, \texttt{sigma3Win\_eq},
-\texttt{sigma3Win\_succ\_succ}: the independence polynomial of
+\texttt{sigma3Win\_succ\_succ}, \texttt{sigma3win\_eq}, \texttt{partition\_l}: the
+independence polynomial of
 Proposition~\ref{prop:indpoly} is split into its degree-$k$ graded pieces
 $\mathrm{indepKWin}(u,k,a,b)=\sum_{|T|=k}\prod_{i\in T}u_i$ over no-two-consecutive
 $T\subseteq[a,b]$, each satisfying the deletion--contraction recurrence; summing over
 $k$ returns $\mathrm{indepPolyWin}$. The order-$3$ piece is the cluster window object
 $\mathrm{sigma3Win}=\mathrm{indepKWin}(u,3,\cdot,\cdot)$, whose recurrence is proved.
-\emph{The $\sigma_3$ closed form~\eqref{eq:sig3} is deliberately \textbf{not}
-promoted}: only the graded combinatorial object and its recurrence are
-\textsc{proven}; the identity
-$\sigma_3=\tfrac16(p_1^3-3p_1p_2+2p_3)-a_1p_1+c+t$ remains \textsc{structural}
-(Appendix~\ref{app:clusters}) and \textsc{verified} ($\sim10^{-54}$), because the
-$a_1p_1$ cross-term regroups monomials across the index cube and is not a termwise
-identity.
+\emph{Version~1.4 promotes the $\sigma_3$ closed form~\eqref{eq:sig3} itself to
+\textsc{proven}}: \texttt{sigma3win\_eq} (with helper \texttt{partition\_l}) proves
+$\sigma_3=e_3-a_1p_1+c+t$ over any window, $e_3$ being the unrestricted
+elementary-symmetric (all-ordered-triples) sum. The cross term $a_1p_1$ is \emph{not}
+a termwise identity; it is reconciled with $\sigma_3$ via the bad-triple decomposition
+$e_3=\sigma_3+\Sigma(\mathcal B)$ and $a_1p_1=\Sigma(\mathcal B)+t+c$
+(Appendix~\ref{app:clusters}), a finite \texttt{Finset} computation with no analytic
+input (clean cone). Only the classical Newton reduction
+$e_3=\tfrac16(p_1^3-3p_1p_2+2p_3)$ is left unformalized (\textsc{structural}); with it,
+\eqref{eq:sig3} holds in full.
 
 \item[\textnormal{(C)}] \textbf{An $m$-term enclosure refining the bracket.}
 \texttt{tsum\_geomTail}, \texttt{Rinf\_enclosure}, \texttt{delta\_enclosure},
@@ -606,8 +657,9 @@ special functions and is left out of scope, numerically \textsc{verified} only.
 \end{theorem}
 
 \noindent No numerically \textsc{verified} statement is silently upgraded by these
-additions --- in particular the $\sigma_3$ closed form and the unweighted
-telescoping limit remain non-\textsc{proven} --- and the epistemic ledger
+additions --- the $\sigma_3$ closed form was promoted to \textsc{proven} only with its
+own clean axiom cone (\texttt{sigma3win\_eq}, Version~1.4), and the unweighted
+telescoping limit remains non-\textsc{proven} --- and the epistemic ledger
 \texttt{claims.jsonl} records, per result, the grade and the hypotheses under which
 each conditional statement may be cited downstream.
 
@@ -625,18 +677,28 @@ bracket), the independence-polynomial and $\sigma_2$ cores require no analytic i
 Version~1.3 (Theorem~\ref{thm:lean-v13}) further proves: the general Casoratian over
 any commutative ring (with the $(-1)^n$ case recovered as a faithfulness witness),
 the degree-graded independence refinement and the order-$3$ cluster window object
-\texttt{sigma3Win} (the $\sigma_3$ \emph{closed form} remains structural/verified and
-is \emph{not} promoted), the $m$-term enclosure $L_m\le\Rinf\le L_m+S^{m+1}/(1-S)$
+\texttt{sigma3Win}, the $m$-term enclosure $L_m\le\Rinf\le L_m+S^{m+1}/(1-S)$
 (conditional on $\Rinf=\sum_k\sigma_k$ and $0\le\sigma_k\le S^k$), and the exact
 weighted telescoping identity for the $B=0$ family (its conditional limit resting
-only on $1/(AN^2+C)\to0$).
+only on $1/(AN^2+C)\to0$). Version~1.4 (\texttt{sigma3win\_eq}, \texttt{partition\_l})
+further proves the $\sigma_3$ inclusion--exclusion closed form
+$\sigma_3=e_3-a_1p_1+c+t$ over any window, unconditional (no analytic input).
 \item \textbf{STRUCTURAL} (complete elementary hand proof; not yet formalized): the
-scaled recurrence and tail estimate (Lemma~\ref{lem:scaled}), the closed forms for
-$S$ (Proposition~\ref{prop:S}), and --- completing the cluster forms beyond the Lean
-$\sigma_2$ core above --- the Newton reduction $e_2=\tfrac12(p_1^2-p_2)$,
-$e_3=\tfrac16(p_1^3-3p_1p_2+2p_3)$ and the $\sigma_3$ closed form
+scaled recurrence and tail estimate (Lemma~\ref{lem:scaled}; its strict-increase and
+boundedness sub-facts are machine-checked, \texttt{rseq\_strictMono\_succ}, but the
+$O(n^{-3})$ tail rate keeps the lemma \textsc{structural}; this is a matter of
+formalization effort rather than a Mathlib obstruction --- the rate is the elementary
+comparison $\sum_{m>n}u_m=O\!\big(\int_n^\infty t^{-4}\,dt\big)=O(n^{-3})$, whose
+\texttt{Summable}/tail-sum ingredients Mathlib already supplies), the closed forms for
+$S$ (Proposition~\ref{prop:S}), and --- the only cluster-form step beyond the Lean
+$\sigma_2,\sigma_3$ inclusion--exclusion cores above --- the classical Newton power-sum
+reductions $e_2=\tfrac12(p_1^2-p_2)$, $e_3=\tfrac16(p_1^3-3p_1p_2+2p_3)$
 (Proposition~\ref{prop:sigma}; the inclusion--exclusion derivation of
-$\sigma_2,\sigma_3$ is Appendix~\ref{app:clusters}).
+$\sigma_2,\sigma_3$ is Appendix~\ref{app:clusters}, now machine-checked). Mathlib does
+provide Newton's identities (\texttt{MvPolynomial.NewtonIdentities}); the residual
+work is not the identity but the bridge from the concrete window \texttt{Finset} sums
+$e_k,p_k$ in the variables $u_i$ to Mathlib's \texttt{esymm}/\texttt{psum} formalism,
+which we defer to a later revision.
 \item \textbf{VERIFIED} (numerically): the cluster identity exactly
 (\texttt{continuant\_verify.py}); $\sigma_2,\sigma_3$ and each step of their
 inclusion--exclusion derivation to $\sim10^{-54}$ (\texttt{verify\_clusters.py},
@@ -675,11 +737,12 @@ at Zenodo (version DOI
 supplement to the companion growth-law note~\cite{growth}; versions 1.1--1.2 added
 the machine-checked closed-form bracket (\texttt{rinf\_bracket}), the
 independence-polynomial identity (\texttt{indepPoly\_eq\_rseq}), and the
-finite-window $\sigma_2$ inclusion--exclusion core (\texttt{sigma2win\_eq}); version
-1.3 adds the generalizations and refinements of Theorem~\ref{thm:lean-v13} (general
-Casoratian, degree-graded independence and the order-$3$ window object, the $m$-term
+finite-window $\sigma_2$ inclusion--exclusion core (\texttt{sigma2win\_eq}); versions
+1.3--1.4 add the generalizations and refinements of Theorem~\ref{thm:lean-v13} (general
+Casoratian, degree-graded independence and the order-$3$ window object, the $\sigma_3$
+closed form \texttt{sigma3win\_eq}, the $m$-term
 enclosure, and exact weighted telescoping for $B=0$). The harness \texttt{Check.lean}
-now reports $58$ axiom cones, each a subset of
+now reports $61$ axiom cones, each a subset of
 $\{\texttt{propext},\texttt{Classical.choice},\texttt{Quot.sound}\}$ with no
 \texttt{sorryAx}. The Lean sources and the verification scripts named above
 accompany the deposit in its public repository,
@@ -691,10 +754,13 @@ accompany the deposit in its public repository,
 \label{app:clusters}
 
 This appendix proves Equations~\eqref{eq:sig2}--\eqref{eq:sig3} by elementary
-inclusion--exclusion, upgrading Proposition~\ref{prop:sigma} from a numerically
-\textsc{verified} identity to a complete \textsc{structural} hand proof; the
-brute-force gate of \texttt{verify\_clusters.py} and the step-by-step gate of
-\texttt{verify\_inclusion\_exclusion.py} then confirm every line to $\sim10^{-54}$.
+inclusion--exclusion. Both inclusion--exclusion cores are now machine-checked in Lean
+(the $\sigma_2$ core \texttt{sigma2win\_eq}, Theorem~\ref{thm:lean}; the $\sigma_3$ core
+$\sigma_3=e_3-a_1p_1+c+t$ as \texttt{sigma3win\_eq}, Theorem~\ref{thm:lean-v13},
+Version~1.4), so the hand proof below is the human-readable companion to a
+\textsc{proven} result; the brute-force gate of \texttt{verify\_clusters.py} and the
+step-by-step gate of \texttt{verify\_inclusion\_exclusion.py} independently confirm
+every line to $\sim10^{-54}$.
 
 Fix the tail $\{m,m+1,\dots\}$ with vertex weights $u_i>0$ and power sums
 $p_j=\sum_{i\ge m}u_i^{\,j}$. Recall from~\eqref{eq:cluster} that
@@ -799,8 +865,8 @@ DOI \texttt{10.1016/0377-0427(92)90239-T}
 \bibitem{dlmf}
 F.~W.~J.~Olver et al.\ (eds.),
 \emph{NIST Digital Library of Mathematical Functions},
-\url{https://dlmf.nist.gov/}, \S5.15 (\emph{Polygamma functions}) and \S5.7
-(series); cited at section level.
+\url{https://dlmf.nist.gov/}, \S3.6 (\emph{Linear difference equations}; minimal/recessive
+solutions), \S5.15 (\emph{Polygamma functions}), and \S5.7 (series); cited at section level.
 
 \bibitem{mpmath}
 F.~Johansson et al.,

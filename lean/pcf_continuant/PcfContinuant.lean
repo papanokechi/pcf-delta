@@ -7,3 +7,4 @@ import PcfContinuant.Topic3
 import PcfContinuant.Topic5
 import PcfContinuant.HigherCaso
 import PcfContinuant.GeneralCaso
+import PcfContinuant.HermitePade
