@@ -193,12 +193,44 @@ if ($gate -ne 0) {
 Write-Host ""
 Write-Host "Deposit assembled, validated, and packaged at: $deposit"
 Write-Host ""
+# The world decides whether this version is already published -- not this script.
+# The line that stood here said the version DOI "is minted by that Publish action",
+# unconditionally. On 2026-08-02 v1.4 was already live, and that sentence would have
+# instructed a duplicate, unwithdrawable deposit. A concept id resolves to the latest
+# published version by plain record fetch; the search endpoint is deliberately not used
+# because it has returned 400 for queries that succeeded minutes earlier.
+$conceptId = '20578400'
+$latest = $null; $latestDoi = $null; $latestDate = $null
+try {
+    $zr = Invoke-RestMethod "https://zenodo.org/api/records/$conceptId" -TimeoutSec 20
+    $latest = $zr.metadata.version; $latestDoi = $zr.doi; $latestDate = $zr.metadata.publication_date
+} catch { $latest = $null }
+
+if ($null -eq $latest) {
+    Write-Host "NEXT: CANNOT VERIFY - Zenodo was unreachable, so this script does not know"
+    Write-Host "  whether v$ver is already published, and will NOT tell you to mint."
+    Write-Host "  Check https://doi.org/10.5281/zenodo.$conceptId by hand first."
+    Write-Host "  Unreachable is not the same as not-yet-deposited."
+    exit 0
+}
+
+$already = $false
+try { $already = ([version]$ver -le [version]$latest) } catch { $already = ($ver -eq $latest) }
+
+if ($already) {
+    Write-Host "NEXT: v$ver IS ALREADY PUBLISHED - do NOT deposit it again."
+    Write-Host "  latest live: v$latest  $latestDoi  ($latestDate)"
+    Write-Host "  Zenodo records cannot be withdrawn; a second v$ver would be permanent."
+    Write-Host "  If this tree has moved past v$latest, bump the version - do not re-mint."
+    exit 0
+}
+
 Write-Host "NEXT (operator-gated, by hand - this script does NOT do these):"
 Write-Host "  * Upload deposit/$top.zip  (or the individual files in deposit/SHA256SUMS.txt)."
 Write-Host "    Do NOT upload deposit/.gitkeep - it is a git placeholder, not deposit content."
-Write-Host "  * On Zenodo, open concept 10.5281/zenodo.20578400 -> 'New version',"
+Write-Host "  * On Zenodo, open concept 10.5281/zenodo.$conceptId -> 'New version',"
 Write-Host "    upload deposit/ contents, confirm METADATA.yml fields, then Publish."
-Write-Host "  * The v$ver version DOI is minted by that Publish action."
+Write-Host "  * v$ver is NOT yet published (latest live is v$latest) - that Publish mints it."
 Write-Host "  * After publish: record the v$ver version DOI in CITATION.cff, .zenodo.json,"
 Write-Host "    METADATA.yml, INDEX.md; commit; then 'SIARC_OPERATOR=1 git push' and"
 Write-Host "    push the v$ver tag."
